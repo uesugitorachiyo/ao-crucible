@@ -1,0 +1,6 @@
+{
+  "schema_version": "foundry-goal-readiness-audit-v0.1",
+  "source_kind": "foundry-goalrun-readiness",
+  "status": "ready",
+  "score": 100
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ao-foundry.dev/schemas/crucible-suite-v0.1.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "suite_id",
+    "title",
+    "mode",
+    "scenarios",
+    "subject_types",
+    "risk_rubric",
+    "safety_profile"
+  ],
+  "properties": {
+    "schema_version": { "const": "ao.crucible.suite.v0.1" },
+    "mode": { "const": "fixture" },
+    "scenarios": { "type": "array", "minItems": 10, "maxItems": 10 }
+  },
+  "additionalProperties": true
+}

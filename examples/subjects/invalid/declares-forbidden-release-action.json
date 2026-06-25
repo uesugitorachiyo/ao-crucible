@@ -1,0 +1,16 @@
+{
+  "schema_version": "ao.crucible.subject.v0.1",
+  "subject_id": "unsafe-release-subject",
+  "display_name": "Unsafe release subject",
+  "subject_type": "ao_orchestration",
+  "fixture_mode_supported": true,
+  "declared_capabilities": ["release"],
+  "declared_forbidden_actions": [],
+  "expected_outputs": ["attempt"],
+  "public_safety_profile": "public-safe-fixture",
+  "trust_boundary": {
+    "mutates_sibling_repos": false,
+    "requires_live_provider": false,
+    "stores_credentials": false
+  }
+}

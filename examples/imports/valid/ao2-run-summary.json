@@ -1,0 +1,6 @@
+{
+  "schema_version": "ao2.run-summary.v1",
+  "source_kind": "ao2-run-summary",
+  "status": "passed",
+  "control_plane_role": "read_only_observer"
+}

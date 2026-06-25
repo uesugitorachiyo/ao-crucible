@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ao-foundry.dev/schemas/crucible-probe-catalog-v0.1.schema.json",
+  "type": "object",
+  "required": ["schema_version", "catalog_id", "probes"],
+  "properties": {
+    "schema_version": { "const": "ao.crucible.probe-catalog.v0.1" },
+    "catalog_id": { "type": "string" },
+    "probes": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "required": ["family", "default_severity", "description"],
+        "properties": {
+          "family": { "type": "string" },
+          "default_severity": { "enum": ["critical", "high", "medium", "low"] },
+          "description": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

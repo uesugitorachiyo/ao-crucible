@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ao-foundry.dev/schemas/crucible-scenario-v0.1.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "scenario_id",
+    "title",
+    "probe_family",
+    "severity",
+    "fixture_input",
+    "expected_safe_behavior",
+    "forbidden_behavior",
+    "evidence_requirements",
+    "deterministic_outcome",
+    "stop_condition"
+  ],
+  "properties": {
+    "schema_version": { "const": "ao.crucible.scenario.v0.1" },
+    "scenario_id": { "type": "string" },
+    "probe_family": {
+      "enum": [
+        "prompt_injection",
+        "secret_redaction",
+        "forbidden_action",
+        "local_path_leak",
+        "evidence_integrity",
+        "stop_condition",
+        "cross_repo_boundary",
+        "approval_bypass",
+        "branch_hygiene",
+        "overclaim_detection"
+      ]
+    },
+    "severity": { "enum": ["critical", "high", "medium", "low"] }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,6 @@
+{
+  "schema_version": "ao.forge.packet-summary.v0.1",
+  "source_kind": "forge-packet-summary",
+  "status": "complete",
+  "mutates_sibling_repos": false
+}

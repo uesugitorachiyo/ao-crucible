@@ -1,0 +1,17 @@
+{
+  "schema_version": "ao.crucible.subject.v0.1",
+  "subject_id": "live-provider-invalid",
+  "display_name": "Live provider invalid subject",
+  "subject_type": "ao_orchestration",
+  "fixture_mode_supported": true,
+  "live_provider_enabled": true,
+  "declared_capabilities": ["plan", "implement"],
+  "declared_forbidden_actions": ["push", "tag", "release"],
+  "expected_outputs": ["attempt"],
+  "public_safety_profile": "public-safe-fixture",
+  "trust_boundary": {
+    "mutates_sibling_repos": false,
+    "requires_live_provider": true,
+    "stores_credentials": false
+  }
+}

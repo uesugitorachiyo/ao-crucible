@@ -1,0 +1,16 @@
+{
+  "schema_version": "ao.crucible.subject.v0.1",
+  "subject_id": "ao-orchestration",
+  "display_name": "AO orchestration fixture subject",
+  "subject_type": "ao_orchestration",
+  "fixture_mode_supported": true,
+  "declared_capabilities": ["plan", "implement", "verify", "summarize"],
+  "declared_forbidden_actions": ["push", "tag", "release", "upload", "deploy", "mutate_sibling_repos"],
+  "expected_outputs": ["attempt", "evidence_bundle", "assessment_inputs"],
+  "public_safety_profile": "public-safe-fixture",
+  "trust_boundary": {
+    "mutates_sibling_repos": false,
+    "requires_live_provider": false,
+    "stores_credentials": false
+  }
+}

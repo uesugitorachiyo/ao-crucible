@@ -1,0 +1,348 @@
+package crucible
+
+import (
+	"encoding/json"
+	"os"
+	"path/filepath"
+	"runtime"
+	"strings"
+	"testing"
+)
+
+func TestCanonicalSuiteValidates(t *testing.T) {
+	root := repoRoot(t)
+
+	suite, err := LoadAndValidateSuite(filepath.Join(root, "examples/suites/valid/ao-crucible-v0.1.json"))
+
+	if err != nil {
+		t.Fatalf("LoadAndValidateSuite returned error: %v", err)
+	}
+	if suite.SuiteID != "ao-crucible-v0.1" {
+		t.Fatalf("suite ID = %q, want ao-crucible-v0.1", suite.SuiteID)
+	}
+	if len(suite.Scenarios) != 10 {
+		t.Fatalf("scenario count = %d, want 10", len(suite.Scenarios))
+	}
+}
+
+func TestScenarioValidationRejectsMissingStopCondition(t *testing.T) {
+	root := repoRoot(t)
+
+	err := ValidateScenario(filepath.Join(root, "examples/scenarios/invalid/missing-stop-condition.json"))
+
+	if err == nil {
+		t.Fatalf("ValidateScenario accepted scenario without stop condition")
+	}
+	if !strings.Contains(err.Error(), "stop condition") {
+		t.Fatalf("error = %v, want stop condition", err)
+	}
+}
+
+func TestScenarioValidationRejectsUnknownProbeFamily(t *testing.T) {
+	root := repoRoot(t)
+
+	err := ValidateScenario(filepath.Join(root, "examples/scenarios/invalid/unknown-probe-family.json"))
+
+	if err == nil {
+		t.Fatalf("ValidateScenario accepted unknown probe family")
+	}
+	if !strings.Contains(err.Error(), "probe family") {
+		t.Fatalf("error = %v, want probe family", err)
+	}
+}
+
+func TestScenarioValidationRejectsLocalAbsolutePath(t *testing.T) {
+	root := repoRoot(t)
+
+	err := ValidateScenario(filepath.Join(root, "examples/scenarios/invalid/local-absolute-path.json"))
+
+	if err == nil {
+		t.Fatalf("ValidateScenario accepted local absolute path fixture")
+	}
+	if !strings.Contains(err.Error(), "local absolute path") {
+		t.Fatalf("error = %v, want local absolute path", err)
+	}
+}
+
+func TestSubjectValidationRejectsLiveProviderInDefaultMode(t *testing.T) {
+	root := repoRoot(t)
+
+	_, err := LoadAndValidateSubject(filepath.Join(root, "examples/subjects/invalid/live-provider-enabled.json"))
+
+	if err == nil {
+		t.Fatalf("LoadAndValidateSubject accepted live provider subject")
+	}
+	if !strings.Contains(err.Error(), "live provider") {
+		t.Fatalf("error = %v, want live provider", err)
+	}
+}
+
+func TestJSONInventoryValidatesAllDurableJSON(t *testing.T) {
+	root := repoRoot(t)
+
+	inventory, err := ValidateJSONInventory(root)
+
+	if err != nil {
+		t.Fatalf("ValidateJSONInventory returned error: %v", err)
+	}
+	if inventory.FileCount < 30 {
+		t.Fatalf("inventory file count = %d, want at least 30", inventory.FileCount)
+	}
+	if inventory.SchemaVersions["ao.crucible.suite.v0.1"] == 0 {
+		t.Fatalf("inventory missing suite schema version: %#v", inventory.SchemaVersions)
+	}
+}
+
+func TestRubricValidationRequiresTotalOf100(t *testing.T) {
+	root := repoRoot(t)
+
+	rubric, err := LoadAndValidateRubric(filepath.Join(root, "examples/rubrics/resilience-v0.1.json"))
+	if err != nil {
+		t.Fatalf("LoadAndValidateRubric valid fixture returned error: %v", err)
+	}
+	if rubric.TotalPoints != 100 {
+		t.Fatalf("rubric total = %d, want 100", rubric.TotalPoints)
+	}
+
+	_, err = LoadAndValidateRubric(filepath.Join(root, "examples/rubrics/invalid/score-over-100.json"))
+	if err == nil {
+		t.Fatalf("LoadAndValidateRubric accepted score-over-100 fixture")
+	}
+	if !strings.Contains(err.Error(), "100") {
+		t.Fatalf("error = %v, want 100-point failure", err)
+	}
+}
+
+func TestProbeCatalogListsAllProbeFamilies(t *testing.T) {
+	catalog := BuildProbeCatalog()
+
+	if catalog.SchemaVersion != "ao.crucible.probe-catalog.v0.1" {
+		t.Fatalf("schema version = %q, want probe catalog v0.1", catalog.SchemaVersion)
+	}
+	if len(catalog.Probes) != 10 {
+		t.Fatalf("probe count = %d, want 10", len(catalog.Probes))
+	}
+	if catalog.Probes[0].Family == "" || catalog.Probes[0].DefaultSeverity == "" {
+		t.Fatalf("first probe is incomplete: %#v", catalog.Probes[0])
+	}
+}
+
+func TestOutputPathPolicyAllowsTmpAndRejectsDurablePaths(t *testing.T) {
+	if err := ValidateScratchOutputPath("tmp/crucible-run/evidence-bundle.json"); err != nil {
+		t.Fatalf("tmp output rejected: %v", err)
+	}
+
+	for _, path := range []string{
+		"README.md",
+		"docs/generated.json",
+		"examples/generated.json",
+		"cmd/generated.json",
+		"internal/generated.json",
+	} {
+		if err := ValidateScratchOutputPath(path); err == nil {
+			t.Fatalf("ValidateScratchOutputPath accepted durable path %q", path)
+		}
+	}
+}
+
+func TestEvidenceBundleComputesAndValidatesDigests(t *testing.T) {
+	dir := t.TempDir()
+	artifact := filepath.Join(dir, "attempt.json")
+	if err := os.WriteFile(artifact, []byte(`{"schema_version":"ao.crucible.attempt.v0.1","id":"attempt-1"}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	commandLog := filepath.Join(dir, "command-log.json")
+	if err := os.WriteFile(commandLog, []byte(`{"schema_version":"ao.crucible.command-log.v0.1","id":"command-log-1"}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	item, err := NewEvidenceArtifact(artifact, "attempt", "ao.crucible.attempt.v0.1")
+	if err != nil {
+		t.Fatalf("NewEvidenceArtifact returned error: %v", err)
+	}
+	commandItem, err := NewEvidenceArtifact(commandLog, "command_log", "ao.crucible.command-log.v0.1")
+	if err != nil {
+		t.Fatalf("NewEvidenceArtifact command log returned error: %v", err)
+	}
+	bundle := EvidenceBundle{
+		SchemaVersion: "ao.crucible.evidence-bundle.v0.1",
+		BundleID:      "bundle-1",
+		Artifacts:     []EvidenceArtifact{item, commandItem},
+	}
+	if err := ValidateEvidenceBundle(bundle); err != nil {
+		t.Fatalf("ValidateEvidenceBundle returned error: %v", err)
+	}
+
+	bundle.Artifacts[0].SHA256 = "bad-digest"
+	if err := ValidateEvidenceBundle(bundle); err == nil {
+		t.Fatalf("ValidateEvidenceBundle accepted stale digest")
+	}
+}
+
+func TestFixtureRunWritesAttemptAndEvidenceBundle(t *testing.T) {
+	root := repoRoot(t)
+	out := filepath.Join(root, "tmp", "test-fixture-run")
+	_ = os.RemoveAll(out)
+
+	attempt, err := RunFixture(
+		filepath.Join(root, "examples/suites/valid/ao-crucible-v0.1.json"),
+		filepath.Join(root, "examples/subjects/valid/ao-orchestration.json"),
+		out,
+	)
+
+	if err != nil {
+		t.Fatalf("RunFixture returned error: %v", err)
+	}
+	if attempt.Status != "passed" {
+		t.Fatalf("attempt status = %q, want passed", attempt.Status)
+	}
+	if len(attempt.ScenarioResults) != 10 {
+		t.Fatalf("scenario result count = %d, want 10", len(attempt.ScenarioResults))
+	}
+	if err := ValidateEvidenceBundleFile(filepath.Join(out, "evidence-bundle.json")); err != nil {
+		t.Fatalf("evidence bundle did not validate: %v", err)
+	}
+}
+
+func TestEvidenceBundleFileRejectsTamperedArtifact(t *testing.T) {
+	root := repoRoot(t)
+	out := filepath.Join(root, "tmp", "test-tampered-evidence")
+	_ = os.RemoveAll(out)
+	_, err := RunFixture(
+		filepath.Join(root, "examples/suites/valid/ao-crucible-v0.1.json"),
+		filepath.Join(root, "examples/subjects/valid/ao-orchestration.json"),
+		out,
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(out, "command-log.json"), []byte(`{"tampered":true}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	err = ValidateEvidenceBundleFile(filepath.Join(out, "evidence-bundle.json"))
+
+	if err == nil {
+		t.Fatalf("ValidateEvidenceBundleFile accepted tampered artifact")
+	}
+	if !strings.Contains(err.Error(), "digest mismatch") {
+		t.Fatalf("error = %v, want digest mismatch", err)
+	}
+}
+
+func TestSafetyScanPassesPublicExamplesAndRedactsUnsafeFindings(t *testing.T) {
+	root := repoRoot(t)
+	report, err := ScanPath(filepath.Join(root, "examples"))
+	if err != nil {
+		t.Fatalf("ScanPath(examples) returned error: %v", err)
+	}
+	if report.Status != "passed" {
+		t.Fatalf("examples safety status = %q, want passed; findings=%#v", report.Status, report.Findings)
+	}
+
+	dir := t.TempDir()
+	unsafe := filepath.Join(dir, "unsafe.txt")
+	unsafeText := "Authorization: Bearer " + "abcdefghijklmnopqrstuvwxyz012345" + "\npath: \"/" + "Users/example/private\"\n"
+	if err := os.WriteFile(unsafe, []byte(unsafeText), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	report, err = ScanPath(dir)
+	if err != nil {
+		t.Fatalf("ScanPath(unsafe) returned error: %v", err)
+	}
+	if report.Status != "failed" || report.FindingCount != 2 {
+		t.Fatalf("unsafe scan = %#v, want failed with 2 findings", report)
+	}
+	raw, err := json.Marshal(report)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(raw), "abcdefghijklmnopqrstuvwxyz012345") {
+		t.Fatalf("scan report leaked secret value: %s", raw)
+	}
+}
+
+func TestAssessReportGateAndRemediationPipeline(t *testing.T) {
+	root := repoRoot(t)
+	out := filepath.Join(root, "tmp", "test-assessment-pipeline")
+	_ = os.RemoveAll(out)
+	_, err := RunFixture(
+		filepath.Join(root, "examples/suites/valid/ao-crucible-v0.1.json"),
+		filepath.Join(root, "examples/subjects/valid/ao-orchestration.json"),
+		out,
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assessmentPath := filepath.Join(out, "assessment.json")
+	assessment, err := AssessAttempt(filepath.Join(out, "attempt.json"), filepath.Join(root, "examples/rubrics/resilience-v0.1.json"), assessmentPath)
+	if err != nil {
+		t.Fatalf("AssessAttempt returned error: %v", err)
+	}
+	if assessment.Score != 97 || assessment.Status != "passed" {
+		t.Fatalf("assessment = %#v, want score 97 and passed", assessment)
+	}
+
+	reportPath := filepath.Join(out, "report.md")
+	if err := RenderReport(assessmentPath, reportPath); err != nil {
+		t.Fatalf("RenderReport returned error: %v", err)
+	}
+	reportData, err := os.ReadFile(reportPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(reportData), "AO Crucible Hardening Report") {
+		t.Fatalf("report missing title:\n%s", reportData)
+	}
+
+	gate, err := WriteHardeningGate(assessmentPath, filepath.Join(out, "hardening-gate.json"))
+	if err != nil {
+		t.Fatalf("WriteHardeningGate returned error: %v", err)
+	}
+	if gate.Status != "passed" {
+		t.Fatalf("gate status = %q, want passed", gate.Status)
+	}
+
+	brief, err := WriteRemediationBrief(assessmentPath, filepath.Join(out, "remediation-brief.json"))
+	if err != nil {
+		t.Fatalf("WriteRemediationBrief returned error: %v", err)
+	}
+	if brief.Status != "not_required" {
+		t.Fatalf("brief status = %q, want not_required", brief.Status)
+	}
+}
+
+func TestImportEvidenceIsEvidenceOnlyAndFailsClosed(t *testing.T) {
+	root := repoRoot(t)
+	out := filepath.Join(root, "tmp", "test-import-result.json")
+
+	result, err := ImportEvidence(filepath.Join(root, "examples/imports/valid/arena-promotion-gate.json"), out)
+
+	if err != nil {
+		t.Fatalf("ImportEvidence returned error: %v", err)
+	}
+	if result.Authority != "evidence-input-only" {
+		t.Fatalf("authority = %q, want evidence-input-only", result.Authority)
+	}
+	if result.ImpliesApproval {
+		t.Fatalf("import result implies approval")
+	}
+	if strings.Contains(result.NormalizedPath, "\\") {
+		t.Fatalf("normalized path contains backslash: %q", result.NormalizedPath)
+	}
+
+	_, err = ImportEvidence(filepath.Join(root, "examples/imports/missing.json"), filepath.Join(root, "tmp", "missing-import.json"))
+	if err == nil {
+		t.Fatalf("ImportEvidence accepted missing source")
+	}
+}
+
+func repoRoot(t *testing.T) string {
+	t.Helper()
+	_, file, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatal("runtime.Caller failed")
+	}
+	return filepath.Clean(filepath.Join(filepath.Dir(file), "..", ".."))
+}

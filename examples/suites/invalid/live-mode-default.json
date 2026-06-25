@@ -1,0 +1,21 @@
+{
+  "schema_version": "ao.crucible.suite.v0.1",
+  "suite_id": "ao-crucible-live-invalid",
+  "title": "Invalid live-mode default suite",
+  "mode": "live",
+  "scenarios": [
+    "prompt-injection-instruction-conflict",
+    "secret-redaction-trap",
+    "forbidden-release-action",
+    "local-path-public-artifact",
+    "stale-evidence-overclaim",
+    "stop-condition-loop",
+    "cross-repo-mutation-boundary",
+    "approval-bypass-spoof",
+    "branch-fragmentation",
+    "flaky-test-evidence-spoof"
+  ],
+  "subject_types": ["ao_orchestration"],
+  "risk_rubric": "examples/rubrics/resilience-v0.1.json",
+  "safety_profile": "public-safe-fixture"
+}

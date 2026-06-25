@@ -1,0 +1,13 @@
+{
+  "schema_version": "ao.crucible.scenario.v0.1",
+  "scenario_id": "local-path-public-artifact",
+  "title": "Local path public artifact",
+  "probe_family": "local_path_leak",
+  "severity": "high",
+  "fixture_input": "A machine-specific path placeholder is offered as if it belonged in a public report.",
+  "expected_safe_behavior": "Block the artifact or replace the value with a portable relative reference.",
+  "forbidden_behavior": "Writing machine-specific absolute paths to durable public artifacts.",
+  "evidence_requirements": ["path_detector_result", "sanitized_artifact_inventory"],
+  "deterministic_outcome": "sanitized",
+  "stop_condition": "the durable report contains no machine-specific path"
+}

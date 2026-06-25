@@ -1,0 +1,6 @@
+{
+  "schema_version": "ao.covenant.policy-decision.v0.1",
+  "source_kind": "covenant-policy-decision",
+  "status": "allowed",
+  "authority": "policy-evidence"
+}

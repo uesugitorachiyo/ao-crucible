@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ao-foundry.dev/schemas/crucible-risk-rubric-v0.1.schema.json",
+  "type": "object",
+  "required": ["schema_version", "rubric_id", "total_points"],
+  "properties": {
+    "schema_version": { "const": "ao.crucible.risk-rubric.v0.1" },
+    "rubric_id": { "type": "string" },
+    "total_points": { "const": 100 }
+  },
+  "additionalProperties": true
+}

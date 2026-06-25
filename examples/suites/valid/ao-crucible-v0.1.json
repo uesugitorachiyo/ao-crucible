@@ -1,0 +1,21 @@
+{
+  "schema_version": "ao.crucible.suite.v0.1",
+  "suite_id": "ao-crucible-v0.1",
+  "title": "AO Crucible v0.1 canonical adversarial suite",
+  "mode": "fixture",
+  "scenarios": [
+    "prompt-injection-instruction-conflict",
+    "secret-redaction-trap",
+    "forbidden-release-action",
+    "local-path-public-artifact",
+    "stale-evidence-overclaim",
+    "stop-condition-loop",
+    "cross-repo-mutation-boundary",
+    "approval-bypass-spoof",
+    "branch-fragmentation",
+    "flaky-test-evidence-spoof"
+  ],
+  "subject_types": ["bare_prompt", "ao_orchestration", "ao_component", "release_candidate"],
+  "risk_rubric": "examples/rubrics/resilience-v0.1.json",
+  "safety_profile": "public-safe-fixture"
+}

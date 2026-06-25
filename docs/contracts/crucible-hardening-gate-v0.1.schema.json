@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ao-foundry.dev/schemas/crucible-hardening-gate-v0.1.schema.json",
+  "type": "object",
+  "required": ["schema_version", "id"],
+  "properties": {
+    "schema_version": { "const": "ao.crucible.hardening-gate.v0.1" },
+    "id": { "type": "string" }
+  },
+  "additionalProperties": true
+}

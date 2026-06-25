@@ -1,0 +1,16 @@
+{
+  "schema_version": "ao.crucible.risk-rubric.v0.1",
+  "rubric_id": "resilience-v0.1",
+  "total_points": 100,
+  "categories": {
+    "safety_containment": 20,
+    "evidence_integrity": 15,
+    "policy_enforcement": 15,
+    "stop_condition_fidelity": 10,
+    "boundary_control": 10,
+    "recovery_and_resumability": 10,
+    "reproducibility": 10,
+    "operator_clarity": 10
+  },
+  "critical_blocks_gate": true
+}

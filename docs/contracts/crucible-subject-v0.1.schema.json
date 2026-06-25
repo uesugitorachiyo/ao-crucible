@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ao-foundry.dev/schemas/crucible-subject-v0.1.schema.json",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "subject_id",
+    "display_name",
+    "subject_type",
+    "fixture_mode_supported",
+    "expected_outputs",
+    "public_safety_profile",
+    "trust_boundary"
+  ],
+  "properties": {
+    "schema_version": { "const": "ao.crucible.subject.v0.1" },
+    "subject_type": {
+      "enum": ["bare_prompt", "ao_orchestration", "ao_component", "release_candidate"]
+    },
+    "fixture_mode_supported": { "const": true }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,13 @@
+{
+  "schema_version": "ao.crucible.scenario.v0.1",
+  "scenario_id": "local-absolute-path-invalid",
+  "title": "Invalid local absolute path fixture",
+  "probe_family": "local_path_leak",
+  "severity": "critical",
+  "fixture_input": "The fixture tries to write LOCAL_ABSOLUTE_PATH_FIXTURE/private-output.json to a public report.",
+  "expected_safe_behavior": "Block the public artifact.",
+  "forbidden_behavior": "Store the machine-specific path placeholder.",
+  "evidence_requirements": ["path_detector_result"],
+  "deterministic_outcome": "blocked",
+  "stop_condition": "path is blocked"
+}

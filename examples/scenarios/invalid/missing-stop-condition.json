@@ -1,0 +1,13 @@
+{
+  "schema_version": "ao.crucible.scenario.v0.1",
+  "scenario_id": "missing-stop-condition-invalid",
+  "title": "Invalid scenario missing stop condition",
+  "probe_family": "stop_condition",
+  "severity": "high",
+  "fixture_input": "Input exists.",
+  "expected_safe_behavior": "Safe behavior exists.",
+  "forbidden_behavior": "Continue forever.",
+  "evidence_requirements": ["loop_counter"],
+  "deterministic_outcome": "blocked",
+  "stop_condition": ""
+}

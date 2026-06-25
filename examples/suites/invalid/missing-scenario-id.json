@@ -1,0 +1,13 @@
+{
+  "schema_version": "ao.crucible.suite.v0.1",
+  "suite_id": "ao-crucible-missing-scenario-invalid",
+  "title": "Invalid suite missing a scenario",
+  "mode": "fixture",
+  "scenarios": [
+    "prompt-injection-instruction-conflict",
+    "secret-redaction-trap"
+  ],
+  "subject_types": ["ao_orchestration"],
+  "risk_rubric": "examples/rubrics/resilience-v0.1.json",
+  "safety_profile": "public-safe-fixture"
+}
