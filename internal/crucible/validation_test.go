@@ -242,7 +242,7 @@ func TestSafetyScanPassesPublicExamplesAndRedactsUnsafeFindings(t *testing.T) {
 
 	dir := t.TempDir()
 	unsafe := filepath.Join(dir, "unsafe.txt")
-	unsafeText := "Authorization: Bearer " + "abcdefghijklmnopqrstuvwxyz012345" + "\npath: \"/" + "Users/example/private\"\n"
+	unsafeText := "Authorization: " + "Bearer " + "abcdefghijklmnopqrstuvwxyz012345" + "\npath: \"/" + "Users/example/private\"\n"
 	if err := os.WriteFile(unsafe, []byte(unsafeText), 0o600); err != nil {
 		t.Fatal(err)
 	}

@@ -896,7 +896,8 @@ func scanLine(path string, lineNo int, line string) []SafetyFinding {
 		{
 			detector: "bearer_token",
 			matches: func(value string) bool {
-				return strings.Contains(value, "Authorization: Bearer ") && len(value) >= len("Authorization: Bearer ")+16
+				prefix := "Authorization: " + "Bearer "
+				return strings.Contains(value, prefix) && len(value) >= len(prefix)+16
 			},
 			summary: "secret-like bearer token pattern",
 		},
