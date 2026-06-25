@@ -101,3 +101,7 @@ The current implementation includes:
 
 The next hardening step is hosted CI and public repository setup after git
 initialization.
+
+## License
+
+AO Crucible is licensed under `Apache-2.0`. See `LICENSE`.
