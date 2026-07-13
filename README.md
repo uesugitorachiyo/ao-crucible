@@ -1,20 +1,20 @@
 # AO Crucible
 
-AO Crucible is the adversarial hardening layer for the AO orchestration
-framework. Where AO Arena measures whether one orchestration approach beats
-another, AO Crucible tries to make an orchestration fail in controlled,
-fixture-only conditions before that orchestration is trusted for public release
-or autonomous overnight work.
+AO Crucible runs controlled adversarial scenarios and failure probes against an AO subject. It validates scenarios and rubrics, records probe attempts, assesses resilience, and produces remediation briefs. Use it when a workflow or execution result needs structured failure testing before operators rely on it. Its current command path uses supplied fixtures and evidence rather than targeting live systems.
 
-The v0.1 product is a local-first Go CLI. It validates adversarial scenario
-suites, runs deterministic fixture-mode probes, collects evidence, scores
-resilience, renders hardening reports, emits promotion gates, scans public
-artifacts, and creates remediation briefs that block unsafe or overclaimed AO
-improvements.
+## How it fits in AO
 
-Fixture mode is the only default v0.1 execution path. AO Crucible does not run
-live providers, mutate sibling repositories, push, tag, release, upload, deploy,
-or store credentials.
+- **Primary responsibility:** Adversarial probes and controlled failure testing.
+- **Inputs:** Subjects, scenario suites, risk rubrics, probe definitions, and recorded evidence.
+- **Outputs:** Probe catalogs, attempts, assessments, hardening results, reports, and remediation briefs.
+- **Upstream:** AO2 runs or other recorded subjects.
+- **Downstream:** AO Sentinel and AO Promoter.
+
+See the
+[AO Architecture guide](https://github.com/uesugitorachiyo/ao-architecture)
+and the
+[AO Crucible component page](https://github.com/uesugitorachiyo/ao-architecture/blob/main/components/ao-crucible.md)
+for the cross-repository flow.
 
 ## Run
 
@@ -59,23 +59,6 @@ git diff --check
 | `docs/sdd/AO-CRUCIBLE-ACCEPTANCE-GATES.md` | 100/100 plan and product readiness gates. |
 | `docs/sdd/AO-CRUCIBLE-SDD-HANDOFF.md` | Handoff prompt for AO Foundry or AO Forge. |
 | `docs/sdd/AO-CRUCIBLE-PHASE-2-GAP-AUDIT.md` | Gaps discovered after the Slice 01-03 scaffold. |
-
-## Planner Artifacts
-
-The validated AO2 SDD plan lives at:
-
-- `target/ao-crucible-plan.json`
-
-The planner prompt lives at:
-
-- `docs/sdd/AO-CRUCIBLE-SDD-PLANNER-PROMPT.md`
-
-## Implementation Rule
-
-Implementation follows the SDD slices in order and keeps every durable artifact
-public-safe. Live provider mode remains blocked unless a later profile,
-operator opt-in, command flag, scratch output path, and pre/post safety scans all
-authorize it.
 
 ## Current Scaffold Status
 
