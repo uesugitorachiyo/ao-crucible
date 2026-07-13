@@ -16,6 +16,43 @@ Fixture mode is the only default v0.1 execution path. AO Crucible does not run
 live providers, mutate sibling repositories, push, tag, release, upload, deploy,
 or store credentials.
 
+## Role
+
+AO Crucible owns adversarial probes and controlled failure-injection evidence.
+It does not own policy, execution authorization, or promotion.
+
+## Maturity
+
+**Prototype.** The local fixture CLI is `implemented` and
+`executable-tested`. Current scenarios are `fixture-only`. The
+external-beta workflow is `clean-room-rehearsed`.
+External beta has not launched.
+
+## Install
+
+```sh
+go build -o bin/crucible ./cmd/crucible
+```
+
+## Quickstart
+
+```sh
+bin/crucible --help
+```
+
+## Safety
+
+No promotion is requested. Crucible does not target production systems or bypass sandbox and approval
+boundaries. It does not prove unrestricted RSI. RSI remains denied.
+
+## External Beta
+
+Canonical topology and status live in
+[AO Architecture](https://github.com/uesugitorachiyo/ao-architecture).
+See the
+[AO Crucible component page](https://github.com/uesugitorachiyo/ao-architecture/blob/main/components/ao-crucible.md)
+for the external-beta boundary.
+
 ## Run
 
 ```sh
