@@ -230,6 +230,60 @@ func TestEvidenceBundleFileRejectsTamperedArtifact(t *testing.T) {
 	}
 }
 
+func TestGitHubIssueMonth2TruthSetFailsClosedForNonBugAndRiskCases(t *testing.T) {
+	root := repoRoot(t)
+	body, err := os.ReadFile(filepath.Join(root, "examples", "scenarios", "valid", "github-issue-month2-truth-set.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var truthSet map[string]any
+	if err := json.Unmarshal(body, &truthSet); err != nil {
+		t.Fatal(err)
+	}
+	if truthSet["schema_version"] != "ao.crucible.github-issue-truth-set.v0.1" ||
+		truthSet["status"] != "ready" {
+		t.Fatalf("unexpected truth-set identity: %#v", truthSet)
+	}
+	fixtures := truthSet["fixtures"].([]any)
+	if len(fixtures) != 11 {
+		t.Fatalf("fixture count = %d, want 11", len(fixtures))
+	}
+	seen := map[string]bool{}
+	for _, item := range fixtures {
+		fixture := item.(map[string]any)
+		seen[fixture["class"].(string)] = true
+		if fixture["may_enter_public_repair"] != false {
+			t.Fatalf("fixture may enter public repair: %#v", fixture)
+		}
+		if fixture["expected_terminal_state"] == "" {
+			t.Fatalf("fixture missing terminal state: %#v", fixture)
+		}
+	}
+	for _, want := range []string{
+		"environment_only_failure",
+		"configuration_error",
+		"documentation_mismatch",
+		"feature_request",
+		"duplicate",
+		"already_fixed_issue",
+		"stale_base",
+		"insufficient_evidence",
+		"policy_blocker",
+		"security_sensitive_behavior",
+		"prompt_injection",
+	} {
+		if !seen[want] {
+			t.Fatalf("truth set missing %q: %#v", want, seen)
+		}
+	}
+	denied := truthSet["denied_actions"].(map[string]any)
+	for action, value := range denied {
+		if value != false {
+			t.Fatalf("denied_actions.%s = %#v, want false", action, value)
+		}
+	}
+}
+
 func TestSafetyScanPassesPublicExamplesAndRedactsUnsafeFindings(t *testing.T) {
 	root := repoRoot(t)
 	report, err := ScanPath(filepath.Join(root, "examples"))
