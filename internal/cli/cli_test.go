@@ -2,6 +2,7 @@ package cli
 
 import (
 	"bytes"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -100,6 +101,41 @@ func TestProductionGateCommandChain(t *testing.T) {
 		var stderr bytes.Buffer
 		if code := Run(args, &stdout, &stderr); code != 0 {
 			t.Fatalf("Run(%v) exit code = %d, want 0; stdout=%s stderr=%s", args, code, stdout.String(), stderr.String())
+		}
+	}
+}
+
+func TestProducesCrucibleFailureInjectionToPromoterAssuranceVector(t *testing.T) {
+	root := repoRoot(t)
+	vectorPath := filepath.Join(root, "examples", "compatibility", "crucible-failure-injection-to-promoter-assurance-input-v0.1.json")
+	body, err := os.ReadFile(vectorPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var vector map[string]any
+	if err := json.Unmarshal(body, &vector); err != nil {
+		t.Fatal(err)
+	}
+	if vector["schema_version"] != "ao.compatibility.crucible-failure-injection-to-promoter-assurance-input-vector.v1" ||
+		vector["edge"] != "ao-crucible.failure_injection_result -> ao-promoter.assurance_input" {
+		t.Fatalf("unexpected Crucible compatibility vector identity: %#v", vector)
+	}
+	result := vector["crucible_failure_injection_result"].(map[string]any)
+	if result["schema_version"] != "ao.crucible.failure-injection-result.v0.1" ||
+		result["status"] != "passed" ||
+		result["critical_failures"] != float64(0) {
+		t.Fatalf("unexpected Crucible failure-injection result: %#v", result)
+	}
+	expected := vector["expected_promoter_assurance_input"].(map[string]any)
+	if expected["schema_version"] != "ao.promoter.assurance-input.v1" ||
+		expected["source_result_schema"] != result["schema_version"] ||
+		expected["assurance_status"] != "accepted" {
+		t.Fatalf("unexpected Promoter expectation: %#v", expected)
+	}
+	boundaries := vector["authority_boundaries"].(map[string]any)
+	for _, key := range []string{"promotion_requested", "promotion_granted", "safe_to_execute", "executes_work", "mutates_repositories", "calls_providers", "releases_or_deploys"} {
+		if boundaries[key] != false {
+			t.Fatalf("Crucible vector boundary %s = %#v, want false", key, boundaries[key])
 		}
 	}
 }
