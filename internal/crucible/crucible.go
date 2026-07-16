@@ -240,6 +240,31 @@ type ImportResult struct {
 	MutatesSiblingRepos bool   `json:"mutates_sibling_repos"`
 }
 
+type ControlledIssueFixture struct {
+	SchemaVersion       string   `json:"schema_version"`
+	FixtureID           string   `json:"fixture_id"`
+	Purpose             string   `json:"purpose"`
+	FixturePath         string   `json:"fixture_path"`
+	ExpectedBehavior    string   `json:"expected_behavior"`
+	ObservedBehavior    string   `json:"observed_behavior"`
+	ReproductionCommand string   `json:"reproduction_command"`
+	ExpectedScore       int      `json:"expected_score"`
+	ReportedScore       int      `json:"reported_score"`
+	BugPresent          bool     `json:"bug_present"`
+	SecuritySensitive   bool     `json:"security_sensitive"`
+	DeniedActions       []string `json:"denied_actions"`
+	RepairHint          string   `json:"repair_hint"`
+}
+
+type ControlledIssueFixtureResult struct {
+	SchemaVersion string `json:"schema_version"`
+	FixtureID     string `json:"fixture_id"`
+	Status        string `json:"status"`
+	ExpectedScore int    `json:"expected_score"`
+	ReportedScore int    `json:"reported_score"`
+	Summary       string `json:"summary"`
+}
+
 func LoadAndValidateSuite(path string) (Suite, error) {
 	var suite Suite
 	if err := readJSON(path, &suite); err != nil {
@@ -601,6 +626,43 @@ func ValidateEvidenceBundle(bundle EvidenceBundle) error {
 		return fmt.Errorf("evidence bundle missing command log")
 	}
 	return nil
+}
+
+func EvaluateControlledIssueFixture(path string) (ControlledIssueFixtureResult, error) {
+	var fixture ControlledIssueFixture
+	if err := readJSON(path, &fixture); err != nil {
+		return ControlledIssueFixtureResult{}, err
+	}
+	if fixture.SchemaVersion != "ao.crucible.github-issue-controlled-bug-fixture.v0.1" {
+		return ControlledIssueFixtureResult{}, fmt.Errorf("invalid controlled issue fixture schema_version")
+	}
+	if fixture.FixtureID == "" || fixture.Purpose == "" || fixture.ExpectedBehavior == "" || fixture.ObservedBehavior == "" || fixture.ReproductionCommand == "" {
+		return ControlledIssueFixtureResult{}, fmt.Errorf("controlled issue fixture missing required field")
+	}
+	if fixture.ExpectedScore < 0 || fixture.ExpectedScore > 100 || fixture.ReportedScore < 0 || fixture.ReportedScore > 100 {
+		return ControlledIssueFixtureResult{}, fmt.Errorf("controlled issue fixture scores must be between 0 and 100")
+	}
+	if fixture.SecuritySensitive {
+		return ControlledIssueFixtureResult{}, fmt.Errorf("controlled issue fixture must not be security-sensitive")
+	}
+	if len(fixture.DeniedActions) == 0 {
+		return ControlledIssueFixtureResult{}, fmt.Errorf("controlled issue fixture missing denied actions")
+	}
+
+	result := ControlledIssueFixtureResult{
+		SchemaVersion: "ao.crucible.github-issue-controlled-bug-result.v0.1",
+		FixtureID:     fixture.FixtureID,
+		ExpectedScore: fixture.ExpectedScore,
+		ReportedScore: fixture.ReportedScore,
+	}
+	if fixture.ExpectedScore != fixture.ReportedScore || fixture.BugPresent {
+		result.Status = "failed"
+		result.Summary = "reported score does not match expected score"
+		return result, nil
+	}
+	result.Status = "passed"
+	result.Summary = "reported score matches expected score"
+	return result, nil
 }
 
 func ScanPath(path string) (SafetyReport, error) {

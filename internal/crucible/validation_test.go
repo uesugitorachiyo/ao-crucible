@@ -392,6 +392,32 @@ func TestImportEvidenceIsEvidenceOnlyAndFailsClosed(t *testing.T) {
 	}
 }
 
+func TestGitHubIssueMonth4ControlledBugFixtureIsDeterministic(t *testing.T) {
+	root := repoRoot(t)
+	fixture := filepath.Join(root, "examples", "github-issue-fixtures", "month4-controlled-bug-score-drift.json")
+
+	result, err := EvaluateControlledIssueFixture(fixture)
+
+	if err != nil {
+		t.Fatalf("EvaluateControlledIssueFixture returned error: %v", err)
+	}
+	if result.FixtureID != "github-issue-month4-controlled-bug-score-drift" {
+		t.Fatalf("fixture ID = %q", result.FixtureID)
+	}
+	if result.ExpectedScore != 100 {
+		t.Fatalf("expected score = %d, want 100", result.ExpectedScore)
+	}
+	if result.ReportedScore < 0 || result.ReportedScore > 100 {
+		t.Fatalf("reported score out of range: %d", result.ReportedScore)
+	}
+	if result.ReportedScore != result.ExpectedScore && result.Status != "failed" {
+		t.Fatalf("mismatched score status = %q, want failed", result.Status)
+	}
+	if result.ReportedScore == result.ExpectedScore && result.Status != "passed" {
+		t.Fatalf("matching score status = %q, want passed", result.Status)
+	}
+}
+
 func repoRoot(t *testing.T) string {
 	t.Helper()
 	_, file, _, ok := runtime.Caller(0)
