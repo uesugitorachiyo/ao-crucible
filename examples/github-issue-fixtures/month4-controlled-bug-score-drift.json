@@ -1,0 +1,24 @@
+{
+  "schema_version": "ao.crucible.github-issue-controlled-bug-fixture.v0.1",
+  "fixture_id": "github-issue-month4-controlled-bug-score-drift",
+  "purpose": "Controlled AO Stack issue-to-draft-PR qualification fixture for Month 4 authentic-bug workflow testing.",
+  "fixture_path": "examples/github-issue-fixtures/month4-controlled-bug-score-drift.json",
+  "expected_behavior": "The fixture verifier should report a passing result when reported_score equals expected_score and bug_present is false.",
+  "observed_behavior": "The current fixture reports score 97 while expected_score is 100, so the verifier exits non-zero.",
+  "reproduction_command": "go run ./cmd/controlled-fixture-verifier --fixture examples/github-issue-fixtures/month4-controlled-bug-score-drift.json",
+  "expected_score": 100,
+  "reported_score": 97,
+  "bug_present": true,
+  "security_sensitive": false,
+  "denied_actions": [
+    "issue_comment",
+    "issue_label_change",
+    "issue_assignment",
+    "issue_close_or_reopen",
+    "project_mutation",
+    "pr_ready_for_review",
+    "pr_review_approval",
+    "pr_merge"
+  ],
+  "repair_hint": "Set reported_score to 100 and bug_present to false. Do not change policy boundaries or denied actions."
+}
