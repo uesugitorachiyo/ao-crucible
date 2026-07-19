@@ -672,19 +672,21 @@ func ScanPath(path string) (SafetyReport, error) {
 		Status:        "passed",
 		ScannedPath:   filepath.ToSlash(filepath.Clean(path)),
 	}
-	err := filepath.WalkDir(path, func(current string, entry fs.DirEntry, walkErr error) error {
-		if walkErr != nil {
-			return walkErr
-		}
-		if entry.IsDir() {
-			name := entry.Name()
-			if name == ".git" || name == "tmp" || name == "target" {
-				return filepath.SkipDir
-			}
-			return nil
-		}
+	root := filepath.Clean(path)
+	rootInfo, err := os.Lstat(root)
+	if err != nil {
+		return report, err
+	}
+	if rootInfo.Mode()&fs.ModeSymlink != 0 {
+		return report, fmt.Errorf("safety scan symlink is not allowed: %s", filepath.ToSlash(root))
+	}
+	budget := safetyScanBudget{}
+	checkFile := func(current string, info fs.FileInfo) error {
 		if !isTextLike(current) {
 			return nil
+		}
+		if err := budget.accept(current, info); err != nil {
+			return err
 		}
 		data, err := os.ReadFile(current)
 		if err != nil {
@@ -697,21 +699,34 @@ func ScanPath(path string) (SafetyReport, error) {
 			}
 		}
 		return nil
-	})
-	if err != nil {
-		info, statErr := os.Stat(path)
-		if statErr != nil || info.IsDir() {
+	}
+	if !rootInfo.IsDir() {
+		if err := checkFile(root, rootInfo); err != nil {
 			return report, err
 		}
-		data, readErr := os.ReadFile(path)
-		if readErr != nil {
-			return report, readErr
-		}
-		lines := strings.Split(string(data), "\n")
-		for index, line := range lines {
-			for _, finding := range scanLine(path, index+1, line) {
-				report.Findings = append(report.Findings, finding)
+	} else {
+		err = filepath.WalkDir(root, func(current string, entry fs.DirEntry, walkErr error) error {
+			if walkErr != nil {
+				return walkErr
 			}
+			if entry.Type()&fs.ModeSymlink != 0 {
+				return fmt.Errorf("safety scan symlink is not allowed: %s", filepath.ToSlash(current))
+			}
+			if entry.IsDir() {
+				name := entry.Name()
+				if name == ".git" || name == "tmp" || name == "target" {
+					return filepath.SkipDir
+				}
+				return nil
+			}
+			info, err := entry.Info()
+			if err != nil {
+				return err
+			}
+			return checkFile(current, info)
+		})
+		if err != nil {
+			return report, err
 		}
 	}
 	report.FindingCount = len(report.Findings)
@@ -719,6 +734,33 @@ func ScanPath(path string) (SafetyReport, error) {
 		report.Status = "failed"
 	}
 	return report, nil
+}
+
+const (
+	maxSafetyScanFiles      = 4096
+	maxSafetyScanFileBytes  = 1 * 1024 * 1024
+	maxSafetyScanTotalBytes = 8 * 1024 * 1024
+)
+
+type safetyScanBudget struct {
+	files      int
+	totalBytes int64
+}
+
+func (budget *safetyScanBudget) accept(path string, info fs.FileInfo) error {
+	size := info.Size()
+	if size > maxSafetyScanFileBytes {
+		return fmt.Errorf("safety scan file size limit exceeded for %s", filepath.ToSlash(path))
+	}
+	budget.files++
+	if budget.files > maxSafetyScanFiles {
+		return fmt.Errorf("safety scan file count limit exceeded")
+	}
+	budget.totalBytes += size
+	if budget.totalBytes > maxSafetyScanTotalBytes {
+		return fmt.Errorf("safety scan total byte limit exceeded")
+	}
+	return nil
 }
 
 func WriteSafetyScan(path string, out string) (SafetyReport, error) {
