@@ -80,7 +80,9 @@ The current implementation includes:
 - JSON inventory tests for durable contract, example, and planner artifacts;
 - shared scratch output policy requiring generated outputs under `tmp/`;
 - evidence bundle digest structs and SHA-256 validation helpers;
-- AO stack evidence import helpers.
+- AO stack evidence import helpers;
+- fixture-only autonomous repair governance assurance for exact fork, branch,
+  draft-PR, review, and merge boundaries.
 
 The next hardening step is hosted CI and public repository setup after git
 initialization.

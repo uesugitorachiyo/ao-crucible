@@ -15,6 +15,7 @@
 | Hardening gate | `docs/contracts/crucible-hardening-gate-v0.1.schema.json` | Emits pass or fail promotion decision. |
 | Remediation brief | `docs/contracts/crucible-remediation-brief-v0.1.schema.json` | Describes follow-up work without performing it. |
 | Autonomous repair truth set | `docs/contracts/crucible-autonomous-repair-truth-set-v1.schema.json` | Pins deterministic fail-closed Stage 1 classifications to Architecture and Covenant contract provenance. |
+| Autonomous repair governance assurance | `docs/contracts/crucible-autonomous-repair-governance-assurance-v1.schema.json` | Recomputes fixture-only Stage 5 GitHub execution decisions against exact merged Architecture, Covenant, and AO2 provenance. |
 
 ## Common Required Fields
 
@@ -142,6 +143,7 @@ Planned valid fixtures:
 - `examples/subjects/valid/ao-orchestration.json`
 - `examples/rubrics/resilience-v0.1.json`
 - `examples/autonomous-repair/valid/stage1-truth-set.json`
+- `examples/autonomous-repair/valid/stage5-governance-assurance.json`
 
 ## Invalid Fixtures
 
