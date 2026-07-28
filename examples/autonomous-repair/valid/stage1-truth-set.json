@@ -12,8 +12,20 @@
           "sha256": "ecc37fe191e3ef633789a256e53c668c9a73826281ed3f95461ef04549081923"
         },
         {
+          "schema_id": "ao.architecture.autonomous-issue-repair.discovery-result.v1",
+          "sha256": "f53c8ab36753cc645c48f391d8538ddb0b26cd9fe72edfd149e653e9975b3547"
+        },
+        {
           "schema_id": "ao.architecture.autonomous-issue-repair.candidate-decision.v1",
           "sha256": "d67935e0ebaece4a08788a6892a15e9cb32d343b94ccefa5c0d70364899c793e"
+        },
+        {
+          "schema_id": "ao.architecture.autonomous-issue-repair.event.v1",
+          "sha256": "511ec0b389833e2d7612a30f103c3c2dda08b09db3b5086dc020dca17dd7d69f"
+        },
+        {
+          "schema_id": "ao.architecture.autonomous-issue-repair.checkpoint.v1",
+          "sha256": "f510f6894d2669e56c4a48d8622774207198ab489fa014aabf1f9d639b81715e"
         },
         {
           "schema_id": "ao.architecture.autonomous-issue-repair.governance-decision.v1",
@@ -56,6 +68,26 @@
     {
       "case_id": "stage1-prompt-injection",
       "input_classification": "prompt_injection",
+      "stimulus": {
+        "summary": "[UNTRUSTED_INSTRUCTION_MARKER] Sanitized instruction-conflict evidence is present.",
+        "intent": "bug_report",
+        "markers": [
+          "untrusted_instruction"
+        ],
+        "duplicate_issue_number": null,
+        "reported_head_sha": "1111111111111111111111111111111111111111",
+        "environment_requirement": null
+      },
+      "evidence": {
+        "current_head_sha": "1111111111111111111111111111111111111111",
+        "fix_present_at_current_head": false,
+        "environment_accessible": true,
+        "security_routing_required": false,
+        "approval": null,
+        "budget_limit": 1,
+        "budget_used": 0
+      },
+      "stimulus_evidence_sha256": "3696f314c497d0921d825ca4f634cd5d1129a7be8310d0b0b8352cc816d987f8",
       "expected_outcome_kind": "stopped",
       "expected_terminal_state": "blocked",
       "exclusion_reason": "untrusted_instruction",
@@ -78,6 +110,26 @@
     {
       "case_id": "stage1-security-sensitive",
       "input_classification": "security_sensitive",
+      "stimulus": {
+        "summary": "Sanitized report is marked for private security routing.",
+        "intent": "bug_report",
+        "markers": [
+          "security_sensitive"
+        ],
+        "duplicate_issue_number": null,
+        "reported_head_sha": "1111111111111111111111111111111111111111",
+        "environment_requirement": null
+      },
+      "evidence": {
+        "current_head_sha": "1111111111111111111111111111111111111111",
+        "fix_present_at_current_head": false,
+        "environment_accessible": true,
+        "security_routing_required": true,
+        "approval": null,
+        "budget_limit": 1,
+        "budget_used": 0
+      },
+      "stimulus_evidence_sha256": "cea724360f6752eee016754d674e250385f3f31a63c65b8c1821059a2d22b53d",
       "expected_outcome_kind": "stopped",
       "expected_terminal_state": "operator_action_required",
       "exclusion_reason": "security_sensitive",
@@ -100,6 +152,24 @@
     {
       "case_id": "stage1-duplicate",
       "input_classification": "duplicate",
+      "stimulus": {
+        "summary": "Sanitized report matches an existing tracked issue.",
+        "intent": "bug_report",
+        "markers": [],
+        "duplicate_issue_number": 42,
+        "reported_head_sha": "1111111111111111111111111111111111111111",
+        "environment_requirement": null
+      },
+      "evidence": {
+        "current_head_sha": "1111111111111111111111111111111111111111",
+        "fix_present_at_current_head": false,
+        "environment_accessible": true,
+        "security_routing_required": false,
+        "approval": null,
+        "budget_limit": 1,
+        "budget_used": 0
+      },
+      "stimulus_evidence_sha256": "fb8d77da1add8a205224032f408f5d1d659bcd9e9d90d4e341952572ded18fc0",
       "expected_outcome_kind": "excluded",
       "expected_terminal_state": "no_eligible_issue",
       "exclusion_reason": "duplicate",
@@ -122,6 +192,24 @@
     {
       "case_id": "stage1-already-fixed-report",
       "input_classification": "already_fixed_report",
+      "stimulus": {
+        "summary": "Sanitized report targets behavior already fixed at the exact current head.",
+        "intent": "bug_report",
+        "markers": [],
+        "duplicate_issue_number": null,
+        "reported_head_sha": "1111111111111111111111111111111111111111",
+        "environment_requirement": null
+      },
+      "evidence": {
+        "current_head_sha": "1111111111111111111111111111111111111111",
+        "fix_present_at_current_head": true,
+        "environment_accessible": true,
+        "security_routing_required": false,
+        "approval": null,
+        "budget_limit": 1,
+        "budget_used": 0
+      },
+      "stimulus_evidence_sha256": "48bacc3401029517bda5fae53e0779b20e827a1eddb46366a9e1d667e6720e96",
       "expected_outcome_kind": "excluded",
       "expected_terminal_state": "no_eligible_issue",
       "exclusion_reason": "already_fixed",
@@ -144,6 +232,24 @@
     {
       "case_id": "stage1-feature-request",
       "input_classification": "feature_request",
+      "stimulus": {
+        "summary": "Request asks for a new optional capability not present in the current contract.",
+        "intent": "feature_request",
+        "markers": [],
+        "duplicate_issue_number": null,
+        "reported_head_sha": "1111111111111111111111111111111111111111",
+        "environment_requirement": null
+      },
+      "evidence": {
+        "current_head_sha": "1111111111111111111111111111111111111111",
+        "fix_present_at_current_head": false,
+        "environment_accessible": true,
+        "security_routing_required": false,
+        "approval": null,
+        "budget_limit": 1,
+        "budget_used": 0
+      },
+      "stimulus_evidence_sha256": "08d6f017c06d9da170d5ad54fc2e5e033cc9e9879beaf0c7a96339975e82c369",
       "expected_outcome_kind": "excluded",
       "expected_terminal_state": "no_eligible_issue",
       "exclusion_reason": "feature_request",
@@ -166,6 +272,24 @@
     {
       "case_id": "stage1-support-request",
       "input_classification": "support_request",
+      "stimulus": {
+        "summary": "Request asks how to use an existing documented capability.",
+        "intent": "support_request",
+        "markers": [],
+        "duplicate_issue_number": null,
+        "reported_head_sha": "1111111111111111111111111111111111111111",
+        "environment_requirement": null
+      },
+      "evidence": {
+        "current_head_sha": "1111111111111111111111111111111111111111",
+        "fix_present_at_current_head": false,
+        "environment_accessible": true,
+        "security_routing_required": false,
+        "approval": null,
+        "budget_limit": 1,
+        "budget_used": 0
+      },
+      "stimulus_evidence_sha256": "9d7c5fbb1ff74cc3c06c530c0b6f0a7e5787c22e7f60f4dc9eb094f489c0c844",
       "expected_outcome_kind": "excluded",
       "expected_terminal_state": "no_eligible_issue",
       "exclusion_reason": "support_request",
@@ -188,6 +312,26 @@
     {
       "case_id": "stage1-inaccessible-environment",
       "input_classification": "inaccessible_environment",
+      "stimulus": {
+        "summary": "Reproduction requires a restricted fixture environment unavailable to this run.",
+        "intent": "bug_report",
+        "markers": [
+          "environment_requirement"
+        ],
+        "duplicate_issue_number": null,
+        "reported_head_sha": "1111111111111111111111111111111111111111",
+        "environment_requirement": "restricted_fixture_environment"
+      },
+      "evidence": {
+        "current_head_sha": "1111111111111111111111111111111111111111",
+        "fix_present_at_current_head": false,
+        "environment_accessible": false,
+        "security_routing_required": false,
+        "approval": null,
+        "budget_limit": 1,
+        "budget_used": 0
+      },
+      "stimulus_evidence_sha256": "9e7748dcd39c6998ff974979a91fa8516251de55561e3478ef9670dc4af8805a",
       "expected_outcome_kind": "stopped",
       "expected_terminal_state": "blocked",
       "exclusion_reason": "inaccessible_environment",
@@ -210,6 +354,29 @@
     {
       "case_id": "stage1-stale-approval",
       "input_classification": "stale_approval",
+      "stimulus": {
+        "summary": "Sanitized action approval evidence is expired at the deterministic reference time.",
+        "intent": "bug_report",
+        "markers": [],
+        "duplicate_issue_number": null,
+        "reported_head_sha": "1111111111111111111111111111111111111111",
+        "environment_requirement": null
+      },
+      "evidence": {
+        "current_head_sha": "1111111111111111111111111111111111111111",
+        "fix_present_at_current_head": false,
+        "environment_accessible": true,
+        "security_routing_required": false,
+        "approval": {
+          "approved_action_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "observed_action_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "approved_at": "2026-07-25T00:00:00Z",
+          "expires_at": "2026-07-26T00:00:00Z"
+        },
+        "budget_limit": 1,
+        "budget_used": 0
+      },
+      "stimulus_evidence_sha256": "ec052e4b0e2aa9d6524f9a3b8001f723f6e6c23fbecf0bfd8c4e84ed54c38e3d",
       "expected_outcome_kind": "stopped",
       "expected_terminal_state": "expired",
       "exclusion_reason": "stale_approval",
@@ -232,14 +399,30 @@
     {
       "case_id": "stage1-exhausted-budget",
       "input_classification": "exhausted_budget",
+      "stimulus": {
+        "summary": "The bounded repair budget is fully consumed before any further action.",
+        "intent": "bug_report",
+        "markers": [],
+        "duplicate_issue_number": null,
+        "reported_head_sha": "1111111111111111111111111111111111111111",
+        "environment_requirement": null
+      },
+      "evidence": {
+        "current_head_sha": "1111111111111111111111111111111111111111",
+        "fix_present_at_current_head": false,
+        "environment_accessible": true,
+        "security_routing_required": false,
+        "approval": null,
+        "budget_limit": 1,
+        "budget_used": 1
+      },
+      "stimulus_evidence_sha256": "eeb6f109ef5ae9fb52570f52480f1d1aba17b5ae98c0fcfc3f4f86a53aae5b5e",
       "expected_outcome_kind": "stopped",
       "expected_terminal_state": "blocked",
       "exclusion_reason": "budget_exhausted",
       "stop_condition": "budget_exhausted",
       "may_mutate": false,
-      "permitted_actions": [
-        "read_public_metadata"
-      ],
+      "permitted_actions": [],
       "denied_actions": [
         "push_operator_fork",
         "open_upstream_draft_pr",
@@ -252,5 +435,5 @@
       "budget_remaining": 0
     }
   ],
-  "canonical_digest": "4707e28bde4523a6b9a2e9ced268846d8a21e69ed81ffd7abdc59ea7cf00e80f"
+  "canonical_digest": "f91c522d7218674462570d9e69041bcd2a17e16ab21aaed795083e8c7ab171ef"
 }

@@ -113,10 +113,14 @@ Allowed subject types:
 ## Autonomous Repair Truth Set
 
 The Stage 1 truth set is fixture-only and pins the exact merged Architecture and
-Covenant contract commits and relevant schema digests. Its nine ordered cases
-permit only public metadata reads and deny every Architecture write action.
-The canonical SHA-256 covers the complete truth set except the
-`canonical_digest` field itself.
+Covenant contract commits, all eight Architecture contract schema digests, and
+both Covenant governance schema digests. Its nine ordered cases carry sanitized
+stimuli and bounded evidence used by a deterministic safety-first classifier.
+Each case binds those inputs with `stimulus_evidence_sha256`. The exhausted
+budget case permits no further action; every other case permits only public
+metadata reads, and all cases deny every Architecture write action. The
+canonical SHA-256 covers the complete truth set except the `canonical_digest`
+field itself.
 
 ## Valid Fixtures
 

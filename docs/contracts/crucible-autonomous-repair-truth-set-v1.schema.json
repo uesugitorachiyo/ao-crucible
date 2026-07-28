@@ -67,6 +67,32 @@
                 "input_classification": {
                   "const": "prompt_injection"
                 },
+                "stimulus": {
+                  "const": {
+                    "summary": "[UNTRUSTED_INSTRUCTION_MARKER] Sanitized instruction-conflict evidence is present.",
+                    "intent": "bug_report",
+                    "markers": [
+                      "untrusted_instruction"
+                    ],
+                    "duplicate_issue_number": null,
+                    "reported_head_sha": "1111111111111111111111111111111111111111",
+                    "environment_requirement": null
+                  }
+                },
+                "evidence": {
+                  "const": {
+                    "current_head_sha": "1111111111111111111111111111111111111111",
+                    "fix_present_at_current_head": false,
+                    "environment_accessible": true,
+                    "security_routing_required": false,
+                    "approval": null,
+                    "budget_limit": 1,
+                    "budget_used": 0
+                  }
+                },
+                "stimulus_evidence_sha256": {
+                  "const": "3696f314c497d0921d825ca4f634cd5d1129a7be8310d0b0b8352cc816d987f8"
+                },
                 "expected_outcome_kind": {
                   "const": "stopped"
                 },
@@ -78,6 +104,23 @@
                 },
                 "stop_condition": {
                   "const": "policy_ambiguity"
+                },
+                "may_mutate": {
+                  "const": false
+                },
+                "permitted_actions": {
+                  "const": [
+                    "read_public_metadata"
+                  ]
+                },
+                "denied_actions": {
+                  "const": [
+                    "push_operator_fork",
+                    "open_upstream_draft_pr",
+                    "open_ready_pr",
+                    "request_merge_queue",
+                    "auto_merge"
+                  ]
                 },
                 "approval_status": {
                   "const": "not_present"
@@ -105,6 +148,32 @@
                 "input_classification": {
                   "const": "security_sensitive"
                 },
+                "stimulus": {
+                  "const": {
+                    "summary": "Sanitized report is marked for private security routing.",
+                    "intent": "bug_report",
+                    "markers": [
+                      "security_sensitive"
+                    ],
+                    "duplicate_issue_number": null,
+                    "reported_head_sha": "1111111111111111111111111111111111111111",
+                    "environment_requirement": null
+                  }
+                },
+                "evidence": {
+                  "const": {
+                    "current_head_sha": "1111111111111111111111111111111111111111",
+                    "fix_present_at_current_head": false,
+                    "environment_accessible": true,
+                    "security_routing_required": true,
+                    "approval": null,
+                    "budget_limit": 1,
+                    "budget_used": 0
+                  }
+                },
+                "stimulus_evidence_sha256": {
+                  "const": "cea724360f6752eee016754d674e250385f3f31a63c65b8c1821059a2d22b53d"
+                },
                 "expected_outcome_kind": {
                   "const": "stopped"
                 },
@@ -116,6 +185,23 @@
                 },
                 "stop_condition": {
                   "const": "security_sensitive"
+                },
+                "may_mutate": {
+                  "const": false
+                },
+                "permitted_actions": {
+                  "const": [
+                    "read_public_metadata"
+                  ]
+                },
+                "denied_actions": {
+                  "const": [
+                    "push_operator_fork",
+                    "open_upstream_draft_pr",
+                    "open_ready_pr",
+                    "request_merge_queue",
+                    "auto_merge"
+                  ]
                 },
                 "approval_status": {
                   "const": "not_present"
@@ -143,6 +229,30 @@
                 "input_classification": {
                   "const": "duplicate"
                 },
+                "stimulus": {
+                  "const": {
+                    "summary": "Sanitized report matches an existing tracked issue.",
+                    "intent": "bug_report",
+                    "markers": [],
+                    "duplicate_issue_number": 42,
+                    "reported_head_sha": "1111111111111111111111111111111111111111",
+                    "environment_requirement": null
+                  }
+                },
+                "evidence": {
+                  "const": {
+                    "current_head_sha": "1111111111111111111111111111111111111111",
+                    "fix_present_at_current_head": false,
+                    "environment_accessible": true,
+                    "security_routing_required": false,
+                    "approval": null,
+                    "budget_limit": 1,
+                    "budget_used": 0
+                  }
+                },
+                "stimulus_evidence_sha256": {
+                  "const": "fb8d77da1add8a205224032f408f5d1d659bcd9e9d90d4e341952572ded18fc0"
+                },
                 "expected_outcome_kind": {
                   "const": "excluded"
                 },
@@ -154,6 +264,23 @@
                 },
                 "stop_condition": {
                   "const": "policy_ambiguity"
+                },
+                "may_mutate": {
+                  "const": false
+                },
+                "permitted_actions": {
+                  "const": [
+                    "read_public_metadata"
+                  ]
+                },
+                "denied_actions": {
+                  "const": [
+                    "push_operator_fork",
+                    "open_upstream_draft_pr",
+                    "open_ready_pr",
+                    "request_merge_queue",
+                    "auto_merge"
+                  ]
                 },
                 "approval_status": {
                   "const": "not_present"
@@ -181,6 +308,30 @@
                 "input_classification": {
                   "const": "already_fixed_report"
                 },
+                "stimulus": {
+                  "const": {
+                    "summary": "Sanitized report targets behavior already fixed at the exact current head.",
+                    "intent": "bug_report",
+                    "markers": [],
+                    "duplicate_issue_number": null,
+                    "reported_head_sha": "1111111111111111111111111111111111111111",
+                    "environment_requirement": null
+                  }
+                },
+                "evidence": {
+                  "const": {
+                    "current_head_sha": "1111111111111111111111111111111111111111",
+                    "fix_present_at_current_head": true,
+                    "environment_accessible": true,
+                    "security_routing_required": false,
+                    "approval": null,
+                    "budget_limit": 1,
+                    "budget_used": 0
+                  }
+                },
+                "stimulus_evidence_sha256": {
+                  "const": "48bacc3401029517bda5fae53e0779b20e827a1eddb46366a9e1d667e6720e96"
+                },
                 "expected_outcome_kind": {
                   "const": "excluded"
                 },
@@ -192,6 +343,23 @@
                 },
                 "stop_condition": {
                   "const": "policy_ambiguity"
+                },
+                "may_mutate": {
+                  "const": false
+                },
+                "permitted_actions": {
+                  "const": [
+                    "read_public_metadata"
+                  ]
+                },
+                "denied_actions": {
+                  "const": [
+                    "push_operator_fork",
+                    "open_upstream_draft_pr",
+                    "open_ready_pr",
+                    "request_merge_queue",
+                    "auto_merge"
+                  ]
                 },
                 "approval_status": {
                   "const": "not_present"
@@ -219,6 +387,30 @@
                 "input_classification": {
                   "const": "feature_request"
                 },
+                "stimulus": {
+                  "const": {
+                    "summary": "Request asks for a new optional capability not present in the current contract.",
+                    "intent": "feature_request",
+                    "markers": [],
+                    "duplicate_issue_number": null,
+                    "reported_head_sha": "1111111111111111111111111111111111111111",
+                    "environment_requirement": null
+                  }
+                },
+                "evidence": {
+                  "const": {
+                    "current_head_sha": "1111111111111111111111111111111111111111",
+                    "fix_present_at_current_head": false,
+                    "environment_accessible": true,
+                    "security_routing_required": false,
+                    "approval": null,
+                    "budget_limit": 1,
+                    "budget_used": 0
+                  }
+                },
+                "stimulus_evidence_sha256": {
+                  "const": "08d6f017c06d9da170d5ad54fc2e5e033cc9e9879beaf0c7a96339975e82c369"
+                },
                 "expected_outcome_kind": {
                   "const": "excluded"
                 },
@@ -230,6 +422,23 @@
                 },
                 "stop_condition": {
                   "const": "policy_ambiguity"
+                },
+                "may_mutate": {
+                  "const": false
+                },
+                "permitted_actions": {
+                  "const": [
+                    "read_public_metadata"
+                  ]
+                },
+                "denied_actions": {
+                  "const": [
+                    "push_operator_fork",
+                    "open_upstream_draft_pr",
+                    "open_ready_pr",
+                    "request_merge_queue",
+                    "auto_merge"
+                  ]
                 },
                 "approval_status": {
                   "const": "not_present"
@@ -257,6 +466,30 @@
                 "input_classification": {
                   "const": "support_request"
                 },
+                "stimulus": {
+                  "const": {
+                    "summary": "Request asks how to use an existing documented capability.",
+                    "intent": "support_request",
+                    "markers": [],
+                    "duplicate_issue_number": null,
+                    "reported_head_sha": "1111111111111111111111111111111111111111",
+                    "environment_requirement": null
+                  }
+                },
+                "evidence": {
+                  "const": {
+                    "current_head_sha": "1111111111111111111111111111111111111111",
+                    "fix_present_at_current_head": false,
+                    "environment_accessible": true,
+                    "security_routing_required": false,
+                    "approval": null,
+                    "budget_limit": 1,
+                    "budget_used": 0
+                  }
+                },
+                "stimulus_evidence_sha256": {
+                  "const": "9d7c5fbb1ff74cc3c06c530c0b6f0a7e5787c22e7f60f4dc9eb094f489c0c844"
+                },
                 "expected_outcome_kind": {
                   "const": "excluded"
                 },
@@ -268,6 +501,23 @@
                 },
                 "stop_condition": {
                   "const": "policy_ambiguity"
+                },
+                "may_mutate": {
+                  "const": false
+                },
+                "permitted_actions": {
+                  "const": [
+                    "read_public_metadata"
+                  ]
+                },
+                "denied_actions": {
+                  "const": [
+                    "push_operator_fork",
+                    "open_upstream_draft_pr",
+                    "open_ready_pr",
+                    "request_merge_queue",
+                    "auto_merge"
+                  ]
                 },
                 "approval_status": {
                   "const": "not_present"
@@ -295,6 +545,32 @@
                 "input_classification": {
                   "const": "inaccessible_environment"
                 },
+                "stimulus": {
+                  "const": {
+                    "summary": "Reproduction requires a restricted fixture environment unavailable to this run.",
+                    "intent": "bug_report",
+                    "markers": [
+                      "environment_requirement"
+                    ],
+                    "duplicate_issue_number": null,
+                    "reported_head_sha": "1111111111111111111111111111111111111111",
+                    "environment_requirement": "restricted_fixture_environment"
+                  }
+                },
+                "evidence": {
+                  "const": {
+                    "current_head_sha": "1111111111111111111111111111111111111111",
+                    "fix_present_at_current_head": false,
+                    "environment_accessible": false,
+                    "security_routing_required": false,
+                    "approval": null,
+                    "budget_limit": 1,
+                    "budget_used": 0
+                  }
+                },
+                "stimulus_evidence_sha256": {
+                  "const": "9e7748dcd39c6998ff974979a91fa8516251de55561e3478ef9670dc4af8805a"
+                },
                 "expected_outcome_kind": {
                   "const": "stopped"
                 },
@@ -306,6 +582,23 @@
                 },
                 "stop_condition": {
                   "const": "credential_required"
+                },
+                "may_mutate": {
+                  "const": false
+                },
+                "permitted_actions": {
+                  "const": [
+                    "read_public_metadata"
+                  ]
+                },
+                "denied_actions": {
+                  "const": [
+                    "push_operator_fork",
+                    "open_upstream_draft_pr",
+                    "open_ready_pr",
+                    "request_merge_queue",
+                    "auto_merge"
+                  ]
                 },
                 "approval_status": {
                   "const": "not_present"
@@ -333,6 +626,35 @@
                 "input_classification": {
                   "const": "stale_approval"
                 },
+                "stimulus": {
+                  "const": {
+                    "summary": "Sanitized action approval evidence is expired at the deterministic reference time.",
+                    "intent": "bug_report",
+                    "markers": [],
+                    "duplicate_issue_number": null,
+                    "reported_head_sha": "1111111111111111111111111111111111111111",
+                    "environment_requirement": null
+                  }
+                },
+                "evidence": {
+                  "const": {
+                    "current_head_sha": "1111111111111111111111111111111111111111",
+                    "fix_present_at_current_head": false,
+                    "environment_accessible": true,
+                    "security_routing_required": false,
+                    "approval": {
+                      "approved_action_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "observed_action_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "approved_at": "2026-07-25T00:00:00Z",
+                      "expires_at": "2026-07-26T00:00:00Z"
+                    },
+                    "budget_limit": 1,
+                    "budget_used": 0
+                  }
+                },
+                "stimulus_evidence_sha256": {
+                  "const": "ec052e4b0e2aa9d6524f9a3b8001f723f6e6c23fbecf0bfd8c4e84ed54c38e3d"
+                },
                 "expected_outcome_kind": {
                   "const": "stopped"
                 },
@@ -344,6 +666,23 @@
                 },
                 "stop_condition": {
                   "const": "digest_mismatch"
+                },
+                "may_mutate": {
+                  "const": false
+                },
+                "permitted_actions": {
+                  "const": [
+                    "read_public_metadata"
+                  ]
+                },
+                "denied_actions": {
+                  "const": [
+                    "push_operator_fork",
+                    "open_upstream_draft_pr",
+                    "open_ready_pr",
+                    "request_merge_queue",
+                    "auto_merge"
+                  ]
                 },
                 "approval_status": {
                   "const": "stale"
@@ -371,6 +710,30 @@
                 "input_classification": {
                   "const": "exhausted_budget"
                 },
+                "stimulus": {
+                  "const": {
+                    "summary": "The bounded repair budget is fully consumed before any further action.",
+                    "intent": "bug_report",
+                    "markers": [],
+                    "duplicate_issue_number": null,
+                    "reported_head_sha": "1111111111111111111111111111111111111111",
+                    "environment_requirement": null
+                  }
+                },
+                "evidence": {
+                  "const": {
+                    "current_head_sha": "1111111111111111111111111111111111111111",
+                    "fix_present_at_current_head": false,
+                    "environment_accessible": true,
+                    "security_routing_required": false,
+                    "approval": null,
+                    "budget_limit": 1,
+                    "budget_used": 1
+                  }
+                },
+                "stimulus_evidence_sha256": {
+                  "const": "eeb6f109ef5ae9fb52570f52480f1d1aba17b5ae98c0fcfc3f4f86a53aae5b5e"
+                },
                 "expected_outcome_kind": {
                   "const": "stopped"
                 },
@@ -382,6 +745,21 @@
                 },
                 "stop_condition": {
                   "const": "budget_exhausted"
+                },
+                "may_mutate": {
+                  "const": false
+                },
+                "permitted_actions": {
+                  "const": []
+                },
+                "denied_actions": {
+                  "const": [
+                    "push_operator_fork",
+                    "open_upstream_draft_pr",
+                    "open_ready_pr",
+                    "request_merge_queue",
+                    "auto_merge"
+                  ]
                 },
                 "approval_status": {
                   "const": "not_present"
@@ -427,8 +805,20 @@
               "sha256": "ecc37fe191e3ef633789a256e53c668c9a73826281ed3f95461ef04549081923"
             },
             {
+              "schema_id": "ao.architecture.autonomous-issue-repair.discovery-result.v1",
+              "sha256": "f53c8ab36753cc645c48f391d8538ddb0b26cd9fe72edfd149e653e9975b3547"
+            },
+            {
               "schema_id": "ao.architecture.autonomous-issue-repair.candidate-decision.v1",
               "sha256": "d67935e0ebaece4a08788a6892a15e9cb32d343b94ccefa5c0d70364899c793e"
+            },
+            {
+              "schema_id": "ao.architecture.autonomous-issue-repair.event.v1",
+              "sha256": "511ec0b389833e2d7612a30f103c3c2dda08b09db3b5086dc020dca17dd7d69f"
+            },
+            {
+              "schema_id": "ao.architecture.autonomous-issue-repair.checkpoint.v1",
+              "sha256": "f510f6894d2669e56c4a48d8622774207198ab489fa014aabf1f9d639b81715e"
             },
             {
               "schema_id": "ao.architecture.autonomous-issue-repair.governance-decision.v1",
@@ -475,12 +865,143 @@
         }
       }
     },
+    "stimulus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "summary",
+        "intent",
+        "markers",
+        "duplicate_issue_number",
+        "reported_head_sha",
+        "environment_requirement"
+      ],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "intent": {
+          "enum": [
+            "bug_report",
+            "feature_request",
+            "support_request"
+          ]
+        },
+        "markers": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "untrusted_instruction",
+              "security_sensitive",
+              "environment_requirement"
+            ]
+          }
+        },
+        "duplicate_issue_number": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "reported_head_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "environment_requirement": {
+          "enum": [
+            "restricted_fixture_environment",
+            null
+          ]
+        }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approved_action_digest",
+        "observed_action_digest",
+        "approved_at",
+        "expires_at"
+      ],
+      "properties": {
+        "approved_action_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "observed_action_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "approved_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "current_head_sha",
+        "fix_present_at_current_head",
+        "environment_accessible",
+        "security_routing_required",
+        "approval",
+        "budget_limit",
+        "budget_used"
+      ],
+      "properties": {
+        "current_head_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "fix_present_at_current_head": {
+          "type": "boolean"
+        },
+        "environment_accessible": {
+          "type": "boolean"
+        },
+        "security_routing_required": {
+          "type": "boolean"
+        },
+        "approval": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/approval"
+            }
+          ]
+        },
+        "budget_limit": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "budget_used": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
     "case": {
       "type": "object",
       "additionalProperties": false,
       "required": [
         "case_id",
         "input_classification",
+        "stimulus",
+        "evidence",
+        "stimulus_evidence_sha256",
         "expected_outcome_kind",
         "expected_terminal_state",
         "exclusion_reason",
@@ -509,6 +1030,16 @@
             "stale_approval",
             "exhausted_budget"
           ]
+        },
+        "stimulus": {
+          "$ref": "#/$defs/stimulus"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "stimulus_evidence_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
         },
         "expected_outcome_kind": {
           "enum": [
@@ -550,9 +1081,12 @@
           "const": false
         },
         "permitted_actions": {
-          "const": [
-            "read_public_metadata"
-          ]
+          "type": "array",
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "const": "read_public_metadata"
+          }
         },
         "denied_actions": {
           "const": [
