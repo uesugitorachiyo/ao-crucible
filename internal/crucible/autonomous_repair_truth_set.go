@@ -101,6 +101,18 @@ type AutonomousRepairApprovalEvidence struct {
 	ExpiresAt            string `json:"expires_at"`
 }
 
+type AutonomousRepairDerivedDecision struct {
+	PrimaryClassification   string
+	Reasons                 []string
+	TerminalState           string
+	PermittedActions        []string
+	UntrustedInstruction    bool
+	SecurityRoutingRequired bool
+	EnvironmentBlocked      bool
+	StaleApproval           bool
+	BudgetExhausted         bool
+}
+
 type autonomousRepairExpectedCase struct {
 	outcome        string
 	terminal       string
@@ -244,12 +256,17 @@ func validateAutonomousRepairTruthSet(truthSet AutonomousRepairTruthSet) error {
 		if err != nil || stimulusEvidenceDigest != testCase.StimulusEvidenceSHA256 {
 			return fmt.Errorf("case %q: stimulus/evidence digest mismatch", testCase.CaseID)
 		}
-		derivedClass, err := DeriveAutonomousRepairClassification(testCase, truthSet.ReferenceTime)
+		derivedDecision, err := DeriveAutonomousRepairDecision(testCase, truthSet.ReferenceTime)
 		if err != nil {
 			return fmt.Errorf("case %q: %w", testCase.CaseID, err)
 		}
-		if derivedClass != testCase.InputClassification {
-			return fmt.Errorf("case %q: derived classification %q does not match declared classification %q", testCase.CaseID, derivedClass, testCase.InputClassification)
+		if derivedDecision.PrimaryClassification != testCase.InputClassification {
+			return fmt.Errorf("case %q: derived classification %q does not match declared classification %q", testCase.CaseID, derivedDecision.PrimaryClassification, testCase.InputClassification)
+		}
+		if !equalStringSlices(derivedDecision.Reasons, []string{testCase.ExclusionReason}) ||
+			derivedDecision.TerminalState != testCase.ExpectedTerminalState ||
+			!equalStringSlices(derivedDecision.PermittedActions, testCase.PermittedActions) {
+			return fmt.Errorf("case %q: derived decision does not match declared pure-case outcome", testCase.CaseID)
 		}
 		if err := validateAutonomousRepairCase(testCase, expected.class, expected.want, referenceTime); err != nil {
 			return fmt.Errorf("case %q: %w", testCase.CaseID, err)
@@ -306,48 +323,108 @@ func validateAutonomousRepairCase(testCase AutonomousRepairTruthSetCase, class s
 }
 
 func DeriveAutonomousRepairClassification(testCase AutonomousRepairTruthSetCase, referenceTimeValue string) (string, error) {
-	if err := validateAutonomousRepairStimulusEvidenceShape(testCase.Stimulus, testCase.Evidence); err != nil {
+	decision, err := DeriveAutonomousRepairDecision(testCase, referenceTimeValue)
+	if err != nil {
 		return "", err
+	}
+	return decision.PrimaryClassification, nil
+}
+
+func DeriveAutonomousRepairDecision(testCase AutonomousRepairTruthSetCase, referenceTimeValue string) (AutonomousRepairDerivedDecision, error) {
+	var decision AutonomousRepairDerivedDecision
+	if err := validateAutonomousRepairStimulusEvidenceShape(testCase.Stimulus, testCase.Evidence); err != nil {
+		return decision, err
 	}
 	referenceTime, err := time.Parse(time.RFC3339, referenceTimeValue)
 	if err != nil {
-		return "", fmt.Errorf("invalid deterministic reference time")
+		return decision, fmt.Errorf("invalid deterministic reference time")
 	}
-	if containsString(testCase.Stimulus.Markers, "untrusted_instruction") {
-		return "prompt_injection", nil
-	}
-	if containsString(testCase.Stimulus.Markers, "security_sensitive") ||
-		testCase.Evidence.SecurityRoutingRequired {
-		return "security_sensitive", nil
-	}
-	if containsString(testCase.Stimulus.Markers, "environment_requirement") &&
-		testCase.Stimulus.EnvironmentRequirement != nil &&
-		!testCase.Evidence.EnvironmentAccessible {
-		return "inaccessible_environment", nil
-	}
+
+	decision.UntrustedInstruction = containsString(testCase.Stimulus.Markers, "untrusted_instruction")
+	decision.SecurityRoutingRequired =
+		containsString(testCase.Stimulus.Markers, "security_sensitive") ||
+			testCase.Evidence.SecurityRoutingRequired
+	decision.EnvironmentBlocked =
+		containsString(testCase.Stimulus.Markers, "environment_requirement") &&
+			testCase.Stimulus.EnvironmentRequirement != nil &&
+			!testCase.Evidence.EnvironmentAccessible
 	if approval := testCase.Evidence.Approval; approval != nil {
 		expiresAt, expiresErr := time.Parse(time.RFC3339, approval.ExpiresAt)
-		if expiresErr == nil && expiresAt.Before(referenceTime) {
-			return "stale_approval", nil
+		decision.StaleApproval = expiresErr == nil && expiresAt.Before(referenceTime)
+	}
+	decision.BudgetExhausted = testCase.Evidence.BudgetUsed >= testCase.Evidence.BudgetLimit
+	duplicate := testCase.Stimulus.DuplicateIssueNumber != nil
+	alreadyFixed := testCase.Evidence.FixPresentAtCurrentHead &&
+		testCase.Stimulus.ReportedHeadSHA == testCase.Evidence.CurrentHeadSHA
+	featureRequest := testCase.Stimulus.Intent == "feature_request"
+	supportRequest := testCase.Stimulus.Intent == "support_request"
+
+	for _, reason := range []struct {
+		present bool
+		value   string
+	}{
+		{decision.UntrustedInstruction, "untrusted_instruction"},
+		{decision.SecurityRoutingRequired, "security_sensitive"},
+		{decision.EnvironmentBlocked, "inaccessible_environment"},
+		{decision.StaleApproval, "stale_approval"},
+		{decision.BudgetExhausted, "budget_exhausted"},
+		{duplicate, "duplicate"},
+		{alreadyFixed, "already_fixed"},
+		{featureRequest, "feature_request"},
+		{supportRequest, "support_request"},
+	} {
+		if reason.present {
+			decision.Reasons = append(decision.Reasons, reason.value)
 		}
 	}
-	if testCase.Evidence.BudgetUsed >= testCase.Evidence.BudgetLimit {
-		return "exhausted_budget", nil
+
+	for _, classification := range []struct {
+		present bool
+		value   string
+	}{
+		{decision.UntrustedInstruction, "prompt_injection"},
+		{decision.SecurityRoutingRequired, "security_sensitive"},
+		{decision.EnvironmentBlocked, "inaccessible_environment"},
+		{decision.StaleApproval, "stale_approval"},
+		{decision.BudgetExhausted, "exhausted_budget"},
+		{duplicate, "duplicate"},
+		{alreadyFixed, "already_fixed_report"},
+		{featureRequest, "feature_request"},
+		{supportRequest, "support_request"},
+	} {
+		if classification.present {
+			decision.PrimaryClassification = classification.value
+			break
+		}
 	}
-	if testCase.Stimulus.DuplicateIssueNumber != nil {
-		return "duplicate", nil
+	if decision.PrimaryClassification == "" {
+		return AutonomousRepairDerivedDecision{}, fmt.Errorf("stimulus/evidence does not derive a fail-closed classification")
 	}
-	if testCase.Evidence.FixPresentAtCurrentHead &&
-		testCase.Stimulus.ReportedHeadSHA == testCase.Evidence.CurrentHeadSHA {
-		return "already_fixed_report", nil
+
+	decision.TerminalState = autonomousRepairTerminalState(decision.PrimaryClassification)
+	if decision.SecurityRoutingRequired {
+		decision.TerminalState = "operator_action_required"
 	}
-	switch testCase.Stimulus.Intent {
-	case "feature_request":
-		return "feature_request", nil
-	case "support_request":
-		return "support_request", nil
+	if decision.BudgetExhausted {
+		decision.PermittedActions = []string{}
+	} else {
+		decision.PermittedActions = []string{"read_public_metadata"}
+	}
+	return decision, nil
+}
+
+func autonomousRepairTerminalState(classification string) string {
+	switch classification {
+	case "prompt_injection", "inaccessible_environment", "exhausted_budget":
+		return "blocked"
+	case "security_sensitive":
+		return "operator_action_required"
+	case "stale_approval":
+		return "expired"
+	case "duplicate", "already_fixed_report", "feature_request", "support_request":
+		return "no_eligible_issue"
 	default:
-		return "", fmt.Errorf("stimulus/evidence does not derive a fail-closed classification")
+		return ""
 	}
 }
 

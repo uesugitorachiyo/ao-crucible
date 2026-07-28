@@ -115,10 +115,12 @@ Allowed subject types:
 The Stage 1 truth set is fixture-only and pins the exact merged Architecture and
 Covenant contract commits, all eight Architecture contract schema digests, and
 both Covenant governance schema digests. Its nine ordered cases carry sanitized
-stimuli and bounded evidence used by a deterministic safety-first classifier.
-Each case binds those inputs with `stimulus_evidence_sha256`. The exhausted
-budget case permits no further action; every other case permits only public
-metadata reads, and all cases deny every Architecture write action. The
+stimuli and bounded evidence used by a deterministic compound evaluator. The
+derived decision retains stable ordered reasons and orthogonal hazard flags:
+security evidence always requires operator routing, while exhausted budget
+always reduces permitted actions to an empty set. Each case binds its inputs
+with `stimulus_evidence_sha256`. Every non-exhausted pure case permits only
+public metadata reads, and all cases deny every Architecture write action. The
 canonical SHA-256 covers the complete truth set except the `canonical_digest`
 field itself.
 

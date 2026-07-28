@@ -275,6 +275,98 @@ func TestAutonomousRepairClassifierUsesSafetyFirstPrecedence(t *testing.T) {
 	}
 }
 
+func TestAutonomousRepairCompoundDecisionPreservesOrthogonalHazards(t *testing.T) {
+	truthSet := loadStage1TruthSet(t)
+	tests := []struct {
+		name        string
+		class       string
+		mutate      func(*AutonomousRepairTruthSetCase)
+		primary     string
+		reasons     []string
+		terminal    string
+		permitted   []string
+		untrusted   bool
+		security    bool
+		environment bool
+		stale       bool
+		budget      bool
+	}{
+		{
+			name:  "prompt and security",
+			class: "prompt_injection",
+			mutate: func(testCase *AutonomousRepairTruthSetCase) {
+				testCase.Evidence.SecurityRoutingRequired = true
+			},
+			primary:   "prompt_injection",
+			reasons:   []string{"untrusted_instruction", "security_sensitive"},
+			terminal:  "operator_action_required",
+			permitted: []string{"read_public_metadata"},
+			untrusted: true,
+			security:  true,
+		},
+		{
+			name:  "inaccessible environment and exhausted budget",
+			class: "inaccessible_environment",
+			mutate: func(testCase *AutonomousRepairTruthSetCase) {
+				testCase.Evidence.BudgetUsed = testCase.Evidence.BudgetLimit
+			},
+			primary:     "inaccessible_environment",
+			reasons:     []string{"inaccessible_environment", "budget_exhausted"},
+			terminal:    "blocked",
+			permitted:   []string{},
+			environment: true,
+			budget:      true,
+		},
+		{
+			name:  "stale approval and exhausted budget",
+			class: "stale_approval",
+			mutate: func(testCase *AutonomousRepairTruthSetCase) {
+				testCase.Evidence.BudgetUsed = testCase.Evidence.BudgetLimit
+			},
+			primary:   "stale_approval",
+			reasons:   []string{"stale_approval", "budget_exhausted"},
+			terminal:  "expired",
+			permitted: []string{},
+			stale:     true,
+			budget:    true,
+		},
+		{
+			name:  "security and exhausted budget",
+			class: "security_sensitive",
+			mutate: func(testCase *AutonomousRepairTruthSetCase) {
+				testCase.Evidence.BudgetUsed = testCase.Evidence.BudgetLimit
+			},
+			primary:   "security_sensitive",
+			reasons:   []string{"security_sensitive", "budget_exhausted"},
+			terminal:  "operator_action_required",
+			permitted: []string{},
+			security:  true,
+			budget:    true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			testCase := autonomousRepairCaseByClass(t, truthSet, tt.class)
+			tt.mutate(&testCase)
+			decision, err := DeriveAutonomousRepairDecision(testCase, truthSet.ReferenceTime)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if decision.PrimaryClassification != tt.primary ||
+				!sameStrings(decision.Reasons, tt.reasons) ||
+				decision.TerminalState != tt.terminal ||
+				!sameStrings(decision.PermittedActions, tt.permitted) ||
+				decision.UntrustedInstruction != tt.untrusted ||
+				decision.SecurityRoutingRequired != tt.security ||
+				decision.EnvironmentBlocked != tt.environment ||
+				decision.StaleApproval != tt.stale ||
+				decision.BudgetExhausted != tt.budget {
+				t.Fatalf("compound decision = %#v", decision)
+			}
+		})
+	}
+}
+
 func TestAutonomousRepairTruthSetRejectsAdversarialMutations(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -479,6 +571,17 @@ func truthSetCase(document map[string]any, classification string) map[string]any
 		}
 	}
 	panic("missing truth-set classification " + classification)
+}
+
+func autonomousRepairCaseByClass(t *testing.T, truthSet AutonomousRepairTruthSet, classification string) AutonomousRepairTruthSetCase {
+	t.Helper()
+	for _, testCase := range truthSet.Cases {
+		if testCase.InputClassification == classification {
+			return testCase
+		}
+	}
+	t.Fatalf("missing truth-set classification %q", classification)
+	return AutonomousRepairTruthSetCase{}
 }
 
 func setTruthSetDigest(t *testing.T, document map[string]any) {
