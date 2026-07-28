@@ -14,10 +14,11 @@
 | Assessment | `docs/contracts/crucible-assessment-v0.1.schema.json` | Stores score, findings, remediations, and gate inputs. |
 | Hardening gate | `docs/contracts/crucible-hardening-gate-v0.1.schema.json` | Emits pass or fail promotion decision. |
 | Remediation brief | `docs/contracts/crucible-remediation-brief-v0.1.schema.json` | Describes follow-up work without performing it. |
+| Autonomous repair truth set | `docs/contracts/crucible-autonomous-repair-truth-set-v1.schema.json` | Pins deterministic fail-closed Stage 1 classifications to Architecture and Covenant contract provenance. |
 
 ## Common Required Fields
 
-Every JSON contract includes:
+The v0.1 execution artifact contracts generally include:
 
 - `schema_version`
 - `id`
@@ -109,6 +110,20 @@ Allowed subject types:
 - `ao_component`
 - `release_candidate`
 
+## Autonomous Repair Truth Set
+
+The Stage 1 truth set is fixture-only and pins the exact merged Architecture and
+Covenant contract commits, all eight Architecture contract schema digests, and
+both Covenant governance schema digests. Its nine ordered cases carry sanitized
+stimuli and bounded evidence used by a deterministic compound evaluator. The
+derived decision retains stable ordered reasons and orthogonal hazard flags:
+security evidence always requires operator routing, while exhausted budget
+always reduces permitted actions to an empty set. Each case binds its inputs
+with `stimulus_evidence_sha256`. Every non-exhausted pure case permits only
+public metadata reads, and all cases deny every Architecture write action. The
+canonical SHA-256 covers the complete truth set except the `canonical_digest`
+field itself.
+
 ## Valid Fixtures
 
 Planned valid fixtures:
@@ -126,6 +141,7 @@ Planned valid fixtures:
 - `examples/scenarios/valid/flaky-test-evidence-spoof.json`
 - `examples/subjects/valid/ao-orchestration.json`
 - `examples/rubrics/resilience-v0.1.json`
+- `examples/autonomous-repair/valid/stage1-truth-set.json`
 
 ## Invalid Fixtures
 
