@@ -40,7 +40,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: uesugitorachiyo/ao-architecture
-          ref: d4ae96e66555f5b45f66f03aa05596b45506ea21
+          ref: 45e75766dfe1eaf586a4e87259cbc44ae4b2ce7a
           path: .ao-supply-chain-policy
 
       - name: Test
@@ -68,7 +68,8 @@ jobs:
             shasum -a 256 "$artifact_dir/$binary" > "$artifact_dir/SHA256SUMS"
           fi
           go env -json GOOS GOARCH GOVERSION > "$artifact_dir/go-env.json"
-          go version -m -json "$artifact_dir/$binary" > "$artifact_dir/go-modules.json"
+          go run .ao-supply-chain-policy/scripts/read_go_binary_metadata.go \
+            "$artifact_dir/$binary" > "$artifact_dir/go-modules.json"
           source_sha="${GITHUB_SHA}"
           version="0.0.0+git.${source_sha:0:12}"
           generated_at_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)
