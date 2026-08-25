@@ -16,6 +16,10 @@ and the
 [AO Crucible component page](https://github.com/uesugitorachiyo/ao-architecture/blob/main/components/ao-crucible.md)
 for the cross-repository flow.
 
+## Build and run from source
+
+Requires Go 1.24 or later.
+
 ## Run
 
 ```sh
@@ -50,7 +54,7 @@ git diff --check
 | File | Purpose |
 | --- | --- |
 | `docs/sdd/AO-CRUCIBLE-PRD.md` | Product requirements, users, scope, non-goals, success metrics. |
-| `docs/sdd/AO-CRUCIBLE-ARCHITECTURE.md` | Planned CLI, packages, data flow, storage layout, integrations. |
+| `docs/sdd/AO-CRUCIBLE-ARCHITECTURE.md` | CLI, packages, data flow, storage layout, integrations. |
 | `docs/sdd/AO-CRUCIBLE-CONTRACTS.md` | JSON contracts, fixture names, validation rules. |
 | `docs/sdd/AO-CRUCIBLE-RISK-MODEL.md` | Failure taxonomy, severity levels, resilience scoring formula. |
 | `docs/sdd/AO-CRUCIBLE-SCENARIOS.md` | Canonical adversarial scenario suite and probe semantics. |
@@ -59,7 +63,7 @@ git diff --check
 | `docs/sdd/AO-CRUCIBLE-ACCEPTANCE-GATES.md` | 100/100 plan and product readiness gates. |
 | `docs/sdd/AO-CRUCIBLE-PHASE-2-GAP-AUDIT.md` | Gaps discovered after the Slice 01-03 scaffold. |
 
-## Current Scaffold Status
+## Current Implementation Status
 
 The current implementation includes:
 
@@ -83,8 +87,7 @@ The current implementation includes:
 - fixture-only autonomous repair governance assurance for exact fork, branch,
   draft-PR, review, and merge boundaries.
 
-The next hardening step is hosted CI and public repository setup after git
-initialization.
+Hosted CI and public repository setup are active.
 
 ## License
 

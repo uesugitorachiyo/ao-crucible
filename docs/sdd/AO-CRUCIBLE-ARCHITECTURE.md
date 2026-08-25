@@ -1,6 +1,6 @@
 # AO Crucible Architecture
 
-## Planned Product Shape
+## Product Shape
 
 AO Crucible v0.1 is a local-first Go CLI named `crucible`. It uses fixture-mode
 adversarial scenarios to test whether an orchestration subject handles safety,
@@ -10,7 +10,7 @@ The CLI writes all generated outputs under caller-provided scratch paths such as
 `tmp/crucible-run`. Durable examples, docs, schemas, and fixtures must never
 contain private data, local absolute paths, or secret-like strings.
 
-## Planned Commands
+## Commands
 
 | Command | Purpose |
 | --- | --- |
@@ -56,7 +56,7 @@ contain private data, local absolute paths, or secret-like strings.
 
 ## Storage Layout
 
-Planned durable files:
+Durable files:
 
 - `docs/contracts/crucible-*.schema.json`
 - `examples/suites/valid/ao-crucible-v0.1.json`
@@ -67,7 +67,7 @@ Planned durable files:
 - `examples/rubrics/resilience-v0.1.json`
 - `docs/demo/AO-CRUCIBLE-HARDENING.md`
 
-Planned generated scratch files:
+Generated scratch files:
 
 - `tmp/crucible-run/attempt.json`
 - `tmp/crucible-run/evidence-bundle.json`
@@ -91,14 +91,10 @@ location without printing the matched secret-like value. Any critical finding,
 missing evidence digest, unsafe path, forbidden action, or unsupported live mode
 returns a non-zero exit code.
 
-## Phase 2 Scaffold Boundary
+## Current Implementation Boundary
 
-The scaffold now implements `suite validate`, `scenario validate`, `subject
-validate`, `rubric validate`, and `probe catalog`. Commands that write generated
-artifacts use a shared output policy: v0.1 generated outputs must be under
-`tmp/`, while durable public paths such as `README.md`, `docs`, `examples`,
-`cmd`, and `internal` are rejected for generated output.
-
-Evidence bundle support is defined as a digest model, not a fixture runner yet.
-The next architectural step is to make `crucible run fixture` produce attempt
-records and evidence bundles using the existing SHA-256 artifact model.
+The CLI implements validation, fixture runs, evidence checks, assessments,
+reports, hardening gates, remediation briefs, and safety scans. Commands that
+write generated artifacts use a shared output policy: v0.1 generated outputs
+must be under `tmp/`, while durable public paths such as `README.md`, `docs`,
+`examples`, `cmd`, and `internal` are rejected for generated output.
