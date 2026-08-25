@@ -15,11 +15,11 @@ The SDD documents score 100/100 only when:
 - scenario suite defines all ten canonical adversarial scenarios;
 - safety document defines forbidden actions, secret detection, path detection,
   live-mode requirements, public artifact rules, and fail-closed behavior;
-- implementation slices define future files, commands, tests, and acceptance
-  checks;
-- handoff prompt tells AO Forge or AO Foundry exactly how to implement slice by
-  slice;
-- `target/ao-crucible-plan.json` validates with AO2 SDD validation;
+- implementation slices and the maintained public fixture-only workflow define
+  commands, tests, and acceptance checks;
+- README product-gate commands exercise the public CLI, contracts, and
+  fixtures without live providers, credentials, promotion, or repository
+  mutation;
 - placeholder scan finds no incomplete planning markers.
 
 ## Product Readiness Gate
@@ -62,17 +62,3 @@ AO Crucible is competitive only when it provides:
 Public safety passes only when durable files under `README.md`, `docs`,
 `examples`, `cmd`, and `internal` contain no private prompts, secret-like
 strings, local absolute paths, unredacted run evidence, or unsupported claims.
-
-## Exit Condition For Autonomous Implementation
-
-An autonomous AO Forge or AO Foundry run should stop when:
-
-- all implementation slices are complete;
-- product readiness gate passes from a clean clone;
-- hardening gate emits `passed`;
-- public safety scan passes;
-- final response includes commands, results, readiness score, and remaining
-  non-blocking future work.
-
-If any critical blocker repeats three times with the same root cause, the run
-must stop and report the blocker rather than continue cycling.
