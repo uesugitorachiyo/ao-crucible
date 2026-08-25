@@ -15,11 +15,11 @@ The SDD documents score 100/100 only when:
 - scenario suite defines all ten canonical adversarial scenarios;
 - safety document defines forbidden actions, secret detection, path detection,
   live-mode requirements, public artifact rules, and fail-closed behavior;
-- implementation slices define future files, commands, tests, and acceptance
-  checks;
-- handoff prompt tells AO Forge or AO Foundry exactly how to implement slice by
-  slice;
-- `target/ao-crucible-plan.json` validates with AO2 SDD validation;
+- implementation slices and the maintained public fixture-only workflow define
+  commands, tests, and acceptance checks;
+- README product-gate commands exercise the public CLI, contracts, and
+  fixtures without live providers, credentials, promotion, or repository
+  mutation;
 - placeholder scan finds no incomplete planning markers.
 
 ## Product Readiness Gate

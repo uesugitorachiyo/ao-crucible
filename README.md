@@ -45,7 +45,7 @@ PATH="$PWD/tmp/bin:$PATH" crucible safety scan --path examples --out tmp/crucibl
 git diff --check
 ```
 
-## SDD Files
+## Public Product Documents
 
 | File | Purpose |
 | --- | --- |
@@ -57,7 +57,6 @@ git diff --check
 | `docs/sdd/AO-CRUCIBLE-SAFETY.md` | Public-safety, forbidden actions, live-run opt-in, fail-closed rules. |
 | `docs/sdd/AO-CRUCIBLE-IMPLEMENTATION-SLICES.md` | Junior-engineer-ready implementation slices. |
 | `docs/sdd/AO-CRUCIBLE-ACCEPTANCE-GATES.md` | 100/100 plan and product readiness gates. |
-| `docs/sdd/AO-CRUCIBLE-SDD-HANDOFF.md` | Handoff prompt for AO Foundry or AO Forge. |
 | `docs/sdd/AO-CRUCIBLE-PHASE-2-GAP-AUDIT.md` | Gaps discovered after the Slice 01-03 scaffold. |
 
 ## Current Scaffold Status
@@ -77,7 +76,7 @@ The current implementation includes:
 - `gate hardening`;
 - `remediation brief`;
 - `safety scan`;
-- JSON inventory tests for durable contract, example, and planner artifacts;
+- JSON inventory tests for durable contracts and example artifacts;
 - shared scratch output policy requiring generated outputs under `tmp/`;
 - evidence bundle digest structs and SHA-256 validation helpers;
 - AO stack evidence import helpers;
